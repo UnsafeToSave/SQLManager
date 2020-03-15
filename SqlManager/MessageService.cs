@@ -11,6 +11,8 @@ namespace SqlManager
     {
         void ShowMessage(string message);
         bool ShowWarningMessage(string message);
+
+        void ShowErrorMessage(string message);
     }
     class MessageService:IMessageService
     {
@@ -26,6 +28,11 @@ namespace SqlManager
                 return true;
             }
             return false;
+        }
+
+        public void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

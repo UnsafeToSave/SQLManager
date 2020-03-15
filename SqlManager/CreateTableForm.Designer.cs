@@ -1,6 +1,6 @@
 ﻿namespace SqlManager
 {
-    partial class ConnectionForm
+    partial class CreateTableForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConnectionForm));
-            this.btnConnection = new System.Windows.Forms.Button();
-            this.fldConnectionString = new System.Windows.Forms.TextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreateTableForm));
+            this.fldTableName = new System.Windows.Forms.TextBox();
+            this.btnCreateTable = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.MenuPanel = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -40,39 +40,39 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // btnConnection
+            // fldTableName
             // 
-            this.btnConnection.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.btnConnection.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnConnection.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnConnection.FlatAppearance.BorderSize = 0;
-            this.btnConnection.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(112)))), ((int)(((byte)(255)))), ((int)(((byte)(69)))));
-            this.btnConnection.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
-            this.btnConnection.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnConnection.ForeColor = System.Drawing.Color.White;
-            this.btnConnection.Location = new System.Drawing.Point(0, 80);
-            this.btnConnection.Name = "btnConnection";
-            this.btnConnection.Size = new System.Drawing.Size(309, 23);
-            this.btnConnection.TabIndex = 0;
-            this.btnConnection.Text = "Соединить";
-            this.btnConnection.UseVisualStyleBackColor = false;
+            this.fldTableName.Location = new System.Drawing.Point(96, 45);
+            this.fldTableName.Name = "fldTableName";
+            this.fldTableName.Size = new System.Drawing.Size(201, 20);
+            this.fldTableName.TabIndex = 0;
             // 
-            // fldConnectionString
+            // btnCreateTable
             // 
-            this.fldConnectionString.Location = new System.Drawing.Point(90, 45);
-            this.fldConnectionString.Name = "fldConnectionString";
-            this.fldConnectionString.Size = new System.Drawing.Size(207, 20);
-            this.fldConnectionString.TabIndex = 1;
+            this.btnCreateTable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            this.btnCreateTable.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.btnCreateTable.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnCreateTable.FlatAppearance.BorderSize = 0;
+            this.btnCreateTable.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(112)))), ((int)(((byte)(255)))), ((int)(((byte)(69)))));
+            this.btnCreateTable.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
+            this.btnCreateTable.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCreateTable.ForeColor = System.Drawing.Color.White;
+            this.btnCreateTable.Location = new System.Drawing.Point(0, 80);
+            this.btnCreateTable.Name = "btnCreateTable";
+            this.btnCreateTable.Size = new System.Drawing.Size(309, 23);
+            this.btnCreateTable.TabIndex = 1;
+            this.btnCreateTable.Text = "Создать";
+            this.btnCreateTable.UseVisualStyleBackColor = false;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(7, 48);
+            this.label1.Location = new System.Drawing.Point(12, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Имя сервера:";
+            this.label1.Text = "Имя таблицы:";
             // 
             // MenuPanel
             // 
@@ -84,7 +84,7 @@
             this.MenuPanel.Location = new System.Drawing.Point(0, 0);
             this.MenuPanel.Name = "MenuPanel";
             this.MenuPanel.Size = new System.Drawing.Size(309, 30);
-            this.MenuPanel.TabIndex = 8;
+            this.MenuPanel.TabIndex = 10;
             // 
             // pictureBox1
             // 
@@ -99,15 +99,16 @@
             // 
             // label2
             // 
+            this.label2.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.label2.AutoSize = true;
             this.label2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(36, 7);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(86, 15);
+            this.label2.Size = new System.Drawing.Size(117, 15);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Подключение";
+            this.label2.Text = "Создание таблицы";
             // 
             // btnClose
             // 
@@ -124,7 +125,7 @@
             this.btnClose.Text = "X";
             this.btnClose.UseVisualStyleBackColor = true;
             // 
-            // ConnectionForm
+            // CreateTableForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -132,13 +133,11 @@
             this.ClientSize = new System.Drawing.Size(309, 103);
             this.Controls.Add(this.MenuPanel);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.fldConnectionString);
-            this.Controls.Add(this.btnConnection);
+            this.Controls.Add(this.btnCreateTable);
+            this.Controls.Add(this.fldTableName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.Name = "ConnectionForm";
-            this.Text = "Соединение";
+            this.Name = "CreateTableForm";
+            this.Text = "CreateTableForm";
             this.MenuPanel.ResumeLayout(false);
             this.MenuPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -148,12 +147,13 @@
         }
 
         #endregion
+
+        protected internal System.Windows.Forms.TextBox fldTableName;
         private System.Windows.Forms.Label label1;
-        protected internal System.Windows.Forms.TextBox fldConnectionString;
-        protected internal System.Windows.Forms.Button btnConnection;
+        protected internal System.Windows.Forms.Button btnCreateTable;
+        protected internal System.Windows.Forms.Panel MenuPanel;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;
         protected internal System.Windows.Forms.Button btnClose;
-        protected internal System.Windows.Forms.Panel MenuPanel;
     }
 }

@@ -15,9 +15,10 @@ namespace SQLTools
         static SqlDataAdapter _adapter = null;
         static DataTable currentTable;
 
-        internal static List<DataSet> GetListDB(string DataSource)
+
+        internal static List<string> GetListDB(string DataSource)
         {
-            var ListDB = new List<DataSet>();
+            var dbNames = new List<string>();
 
             _connectionStr = new SqlConnectionStringBuilder
             {
@@ -25,7 +26,7 @@ namespace SQLTools
                 IntegratedSecurity = true
             };
 
-            using (IDbConnection connection = new SqlConnection(_connectionStr.ToString()))
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
             {
                 IDbCommand command = new SqlCommand("Select name from sys.databases");
                 command.Connection = connection;
@@ -36,16 +37,15 @@ namespace SQLTools
 
                 while (reader.Read())
                 {
-                    ListDB.Add(new DataSet(reader.GetString(0)));
+                    dbNames.Add(reader.GetString(0));
                 }
             }
-
-            return ListDB;
+            return dbNames;
         }
 
-        internal static List<DataTable> GetListTables(string dbName)
+        internal static List<string> GetListTables(string dbName)
         {
-            var ListTables = new List<DataTable>();
+            var tableNames = new List<string>();
 
             var DBconnection = new SqlConnectionStringBuilder
             {
@@ -54,7 +54,7 @@ namespace SQLTools
                 IntegratedSecurity = true
             };
 
-            using (IDbConnection connection = new SqlConnection(DBconnection.ToString()))
+            using (SqlConnection connection = new SqlConnection(DBconnection.ToString()))
             {
                 IDbCommand command = new SqlCommand("Select name from sys.tables where type_desc = 'USER_TABLE'");
                 command.Connection = connection;
@@ -63,11 +63,10 @@ namespace SQLTools
                 IDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    ListTables.Add(new DataTable(reader.GetString(0)));
+                    tableNames.Add(reader.GetString(0));
                 }
             }
-
-            return ListTables;
+            return tableNames;
         }
 
         internal static string GetPKColumn(string dbName, string tableName)
@@ -94,11 +93,11 @@ namespace SQLTools
             return columnName;
         }
 
-        internal static void CreateConnect(string DataSource, string InitialCatalog, string query)
+        internal static void CreateConnect(string InitialCatalog, string query)
         {
             _connectionStr = new SqlConnectionStringBuilder
             {
-                DataSource = DataSource,
+                DataSource = _connectionStr.DataSource,
                 InitialCatalog = InitialCatalog,
                 IntegratedSecurity = true
             };
@@ -112,12 +111,12 @@ namespace SQLTools
             var builder = new SqlCommandBuilder(adapter);
         }
 
-        internal static DataTable GetTable(string DataSource, string InitialCatalog, string tableName)
+        internal static DataTable GetTable(string InitialCatalog, string tableName)
         {
             currentTable = new DataTable(tableName);
             string query = $"Select * from {tableName}";
 
-            CreateConnect(DataSource, InitialCatalog, query);
+            CreateConnect(InitialCatalog, query);
 
             try
             {
@@ -125,7 +124,8 @@ namespace SQLTools
             }
             catch (SqlException e)
             {
-                throw new Exception(e.Message);
+                MessageBox.Show(e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                currentTable = default;
             }
             catch (Exception e)
             {
@@ -133,7 +133,7 @@ namespace SQLTools
             }
 
             return currentTable;
-        }
+        } 
 
         internal static void DeleteRow(int index)
         {
@@ -142,14 +142,183 @@ namespace SQLTools
             Update();
         }
 
-        internal static void ChangeRow(DataTable table, int index)
+        internal static void ChangeRow()
         {
             Update();
+        }
+
+        internal static bool CreateDB(string dbName)
+        {
+            foreach (var db in GetListDB(_connectionStr.DataSource))
+            {
+                if (db == dbName)
+                {
+                    return false;
+                }
+            }
+
+            CloseConnections();
+
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"Create DataBase {dbName}");
+                command.Connection = connection;
+                connection.Open();
+                command.ExecuteNonQuery();
+                CloseConnection(connection);
+            }
+
+            return true;
+        }
+
+        internal static void Disconnect()
+        {
+            _connectionStr = default;
+            CloseConnections();
+        }
+
+        internal static bool CreateTable(string dbName, string tableName)
+        {
+            if (currentTable.Rows.Count == 0) return false;
+            CloseConnections();
+            _connectionStr.InitialCatalog = dbName;
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                string query = $"Create table {tableName}(";
+                for (int i = 0; i < currentTable.Rows.Count; i++)
+                {
+                    for(int j = 0; j < currentTable.Columns.Count; j++)
+                    {
+                        query += " ";
+                        if (j != 2)
+                        {
+                            query += currentTable.Rows[i][j].ToString();
+                        }
+                        else
+                        {
+                            query += currentTable.Rows[i][j].ToString();
+                            if (currentTable.Rows[i][j].ToString() == "true")
+                                query += "Null";
+                            else
+                                query += "Not null";
+                        }
+                    }
+                    if(currentTable.Rows.Count > 1)
+                        query += ",";
+                }
+                query += ");";
+                IDbCommand command = new SqlCommand($"Select count(TABLE_NAME) from information_schema.TABLES where TABLE_NAME = '{tableName}'");
+                command.Connection = connection;
+                connection.Open();
+                IDataReader reader = command.ExecuteReader();
+                reader.Read();
+                bool IsExistTable = reader.GetInt32(0) == 0;
+                reader.Close();
+                if (IsExistTable)
+                {
+                    command = new SqlCommand(query);
+                    command.Connection = connection;
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        internal static DataTable GetCreateTable()
+        {
+            ClearStaticData();
+            var table = new DataTable("Creator");
+            List<DataColumn> columns = new List<DataColumn>();
+            List<string> columnNames = new List<string>() { 
+                "Имя столбца", 
+                "Тип данных", 
+                "Nullable" };
+            List<Type> columnTypes = new List<Type>() { 
+                typeof(string), 
+                typeof(string),
+                typeof(bool) };
+            for(int i = 0; i < columnNames.Count; i++)
+            {
+                columns.Add(new DataColumn(columnNames[i], columnTypes[i]));
+            }
+            
+            foreach(var column in columns)
+            {
+                table.Columns.Add(column);
+            }
+
+            currentTable = table;
+
+            return table;
+        }
+
+        internal static void DeleteDB(string dbName)
+        {
+            CloseConnections();
+            _connectionStr.InitialCatalog = "";
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"Drop DataBase {dbName}");
+                command.Connection = connection;
+                connection.Open();
+                command.ExecuteNonQuery();
+                CloseConnection(connection);
+            }
+        }
+
+        internal static void DeleteTable(string dbName, string tableName)
+        {
+            CloseConnections();
+            _connectionStr.InitialCatalog = dbName;
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"Drop Table {tableName}");
+                command.Connection = connection;
+                connection.Open();
+                command.ExecuteNonQuery();
+                CloseConnection(connection);
+            }
+        }
+
+        internal static void CloseConnections()
+        {
+            SqlConnection.ClearAllPools();
+        }
+
+        internal static bool IsExist(string objectName)
+        {
+            //TODO написать метод проверки на существование объекта(базы, таблицы)
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                //IDbCommand command = new SqlCommand($"Select Count form sys.databases where = '{objectName}'");
+                //command.Connection = connection;
+                //connection.Open();
+
+                //IDataReader reader = command.ExecuteReader();
+                //if (reader.GetInt32(0) >= 1)
+                //    return true;
+                //else
+                //    return false;
+                return true;
+            }
         }
 
         private static void Update()
         {
             _adapter.Update(currentTable);
         }
+
+        private static void CloseConnection(SqlConnection connection)
+        {
+            SqlConnection.ClearPool(connection);
+        }
+
+        private static void ClearStaticData()
+        {
+            _adapter = null;
+            currentTable = default;
+        }
+
     }
 }
