@@ -196,7 +196,6 @@ namespace SQLTools
                         }
                         else
                         {
-                            query += currentTable.Rows[i][j].ToString();
                             if (currentTable.Rows[i][j].ToString() == "true")
                                 query += "Null";
                             else

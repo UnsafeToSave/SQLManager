@@ -130,8 +130,8 @@
             this.DBContextMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             this.DBContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreateTableTSMItem,
-            this.DeleteDBTSMItem,
-            this.RenameDBTSMItem});
+            this.RenameDBTSMItem,
+            this.DeleteDBTSMItem});
             this.DBContextMenu.Name = "DBСontextMenu";
             this.DBContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.DBContextMenu.Size = new System.Drawing.Size(189, 70);
@@ -155,6 +155,7 @@
             // RenameDBTSMItem
             // 
             this.RenameDBTSMItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.RenameDBTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("RenameDBTSMItem.Image")));
             this.RenameDBTSMItem.Name = "RenameDBTSMItem";
             this.RenameDBTSMItem.Size = new System.Drawing.Size(188, 22);
             this.RenameDBTSMItem.Text = "Переименовать базу";
@@ -163,8 +164,8 @@
             // 
             this.TableContextMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             this.TableContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.DeleteTableTSMItem,
-            this.RenameTableTSMItem});
+            this.RenameTableTSMItem,
+            this.DeleteTableTSMItem});
             this.TableContextMenu.Name = "TableContextMenu";
             this.TableContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.TableContextMenu.Size = new System.Drawing.Size(210, 48);
@@ -180,6 +181,7 @@
             // RenameTableTSMItem
             // 
             this.RenameTableTSMItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.RenameTableTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("RenameTableTSMItem.Image")));
             this.RenameTableTSMItem.Name = "RenameTableTSMItem";
             this.RenameTableTSMItem.Size = new System.Drawing.Size(209, 22);
             this.RenameTableTSMItem.Text = "Переименовать таблицу";
@@ -267,6 +269,7 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             this.panel1.Controls.Add(this.btnDeleteDB);
             this.panel1.Controls.Add(this.btnRefresh);
@@ -318,6 +321,7 @@
             // DeleteRowTSMItem
             // 
             this.DeleteRowTSMItem.ForeColor = System.Drawing.Color.White;
+            this.DeleteRowTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteRowTSMItem.Image")));
             this.DeleteRowTSMItem.Name = "DeleteRowTSMItem";
             this.DeleteRowTSMItem.Size = new System.Drawing.Size(158, 22);
             this.DeleteRowTSMItem.Text = "Удалить строку";

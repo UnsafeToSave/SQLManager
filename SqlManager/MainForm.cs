@@ -64,8 +64,8 @@ namespace SqlManager
             LoadResources();
 
             connectionForm = new ConnectionForm();
-            connectionForm.btnClose.Click += BtnClose_Click;
-            connectionForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+            connectionForm.btnClose.Click += CloseForm;
+            connectionForm.MenuPanel.MouseDown += MoveForm;
             connectionForm.FormClosed += ConnectionForm_FormClosed;
             connectionForm.btnConnection.Click += BtnConnection_Click;
             connectionForm.ShowDialog(this);
@@ -246,9 +246,10 @@ namespace SqlManager
             GridContent.MouseClick += GridContent_MouseClick;
 
 
-            MenuPanel.MouseDown += MenuPanel_MouseDown;
-            btnClose.Click += BtnClose_Click;
-            btnMinimize.Click += BtnMinimize_Click;
+            MenuPanel.MouseDown += MoveForm;
+            MenuPanel.DoubleClick += MaximizeWindow;
+            btnClose.Click += CloseForm;
+            btnMinimize.Click += MinimizeWindow;
         }
         private void GridContent_MouseClick(object sender, MouseEventArgs e)
         {
@@ -291,14 +292,15 @@ namespace SqlManager
             {
                 tableForm = new TableForm();
             }
-            tableForm.btnClose.Click += BtnClose_Click;
-            tableForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+            tableForm.btnClose.Click += CloseForm;
+            tableForm.MenuPanel.MouseDown += MoveForm;
             tableForm.btnActionTable.Click += CreateNewTable;
             tableForm.fldTableName.Text = "";
             tableForm.ShowDialog(this);
         }
         private void CreateNewTable(object sender, EventArgs e)
         {
+            ContentMode = Mode.Normal;
             TableCreated?.Invoke(this, EventArgs.Empty);
         }
         private void DeleteRow(object sender, EventArgs e)
@@ -350,7 +352,7 @@ namespace SqlManager
             {
                 dbForm = new DBForm();
             }
-            dbForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+            dbForm.MenuPanel.MouseDown += MoveForm;
             dbForm.btnClose.Click += DBFormClose;
             dbForm.btnActionDB.Click += CreateDB;
             dbForm.fldDBName.Text = "";
@@ -424,7 +426,7 @@ namespace SqlManager
         }
 
         #region Меню
-        private void MenuPanel_MouseDown(object sender, MouseEventArgs e)
+        private void MoveForm(object sender, MouseEventArgs e)
         {
             Message m = default;
             switch ((sender as Panel).Parent.Name)
@@ -448,7 +450,7 @@ namespace SqlManager
             }
             this.WndProc(ref m);
         }
-        private void BtnClose_Click(object sender, EventArgs e)
+        private void CloseForm(object sender, EventArgs e)
         {
             switch ((sender as Button).Parent.Parent.Name)
             {
@@ -466,9 +468,13 @@ namespace SqlManager
                     break;
             }
         }
-        private void BtnMinimize_Click(object sender, EventArgs e)
+        private void MinimizeWindow(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
+        }
+        private void MaximizeWindow(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Maximized;
         }
         #endregion
 
