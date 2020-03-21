@@ -281,12 +281,38 @@ namespace SQLTools
             }
         }
 
+        internal static void RenameDB(string name, string newName)
+        {
+            CloseConnections();
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"Alter database {name} Modify Name = {newName}");
+                command.Connection = connection;
+                connection.Open();
+                command.ExecuteNonQuery();
+                CloseConnection(connection);
+            }
+        }
+
+        internal static void RenameTable(string dbName, string name, string newName)
+        {
+            _connectionStr.InitialCatalog = dbName;
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"exec sp_rename '{name}', '{newName}'");
+                command.Connection = connection;
+                connection.Open();
+                command.ExecuteNonQuery();
+                CloseConnection(connection);
+            }
+        }
+
         internal static void CloseConnections()
         {
             SqlConnection.ClearAllPools();
         }
 
-        internal static bool IsExist(string objectName)
+        internal static bool IsExist(string fullPath)
         {
             //TODO написать метод проверки на существование объекта(базы, таблицы)
             using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
@@ -302,6 +328,11 @@ namespace SQLTools
                 //    return false;
                 return true;
             }
+        }
+
+        internal static bool IsLock(string fullPath)
+        {
+            return false;
         }
 
         private static void Update()

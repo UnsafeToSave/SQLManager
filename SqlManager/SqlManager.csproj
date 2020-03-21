@@ -68,17 +68,17 @@
     <Compile Include="ConnectionForm.Designer.cs">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CreateDBForm.cs">
+    <Compile Include="DBForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CreateDBForm.Designer.cs">
-      <DependentUpon>CreateDBForm.cs</DependentUpon>
+    <Compile Include="DBForm.Designer.cs">
+      <DependentUpon>DBForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="CreateTableForm.cs">
+    <Compile Include="TableForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CreateTableForm.Designer.cs">
-      <DependentUpon>CreateTableForm.cs</DependentUpon>
+    <Compile Include="TableForm.Designer.cs">
+      <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -93,11 +93,11 @@
     <EmbeddedResource Include="ConnectionForm.resx">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CreateDBForm.resx">
-      <DependentUpon>CreateDBForm.cs</DependentUpon>
+    <EmbeddedResource Include="DBForm.resx">
+      <DependentUpon>DBForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CreateTableForm.resx">
-      <DependentUpon>CreateTableForm.cs</DependentUpon>
+    <EmbeddedResource Include="TableForm.resx">
+      <DependentUpon>TableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -20,10 +20,10 @@ namespace SqlManager
     public interface IMainForm
     {
         string ServerName { get; }
-        string CreateDBName { get; }
-        string CreateTableName { get; }
+        string DBName { set; get; }
+        string TableName { set; get; }
         string CurrentDB { get; set; }
-        string PathToTable { get; }
+        string CurrentTable { get; }
         TreeNode[] Explorer { set; }
         DataTable Content { set; }
         DataTable CurrentRow { get; }
@@ -42,14 +42,16 @@ namespace SqlManager
         event EventHandler TableCreate;
         event EventHandler DBDeleted;
         event EventHandler TableDeleted;
+        event EventHandler DBRenamed;
+        event EventHandler TableRenamed;
 
     }
     
     public partial class MainForm : Form, IMainForm
     {
         ConnectionForm connectionForm;
-        CreateDBForm createDBForm;
-        CreateTableForm createTableForm;
+        DBForm dbForm; 
+        TableForm tableForm;
         ImageList images;
         string _currentDB;
         bool dataChanged = false;
@@ -62,8 +64,8 @@ namespace SqlManager
             LoadResources();
 
             connectionForm = new ConnectionForm();
-            connectionForm.btnClose.Click += BtnClose_Click1;
-            connectionForm.MenuPanel.MouseDown += MenuPanel_MouseDown1;
+            connectionForm.btnClose.Click += BtnClose_Click;
+            connectionForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
             connectionForm.FormClosed += ConnectionForm_FormClosed;
             connectionForm.btnConnection.Click += BtnConnection_Click;
             connectionForm.ShowDialog(this);
@@ -92,18 +94,34 @@ namespace SqlManager
                 return connectionForm.fldConnectionString.Text;
             }
         }
-        public string CreateDBName
+        public string DBName
         {
+            set
+            {
+                if(dbForm == null)
+                {
+                    dbForm = new DBForm();
+                }
+                dbForm.fldDBName.Text = value;
+            }
             get
             {
-                return createDBForm.fldDBName.Text;
+                return dbForm.fldDBName.Text;
             }
         }
-        public string CreateTableName
+        public string TableName
         {
+            set
+            {
+                if(tableForm == null)
+                {
+                    tableForm = new TableForm();
+                }
+                tableForm.fldTableName.Text = value;
+            }
             get
             {
-                return createTableForm.fldTableName.Text;
+                return tableForm.fldTableName.Text;
             }
         }
         public string CurrentDB
@@ -117,12 +135,12 @@ namespace SqlManager
                 _currentDB = value;
             }
         }
-        public string PathToTable
+        public string CurrentTable
         {
             get
             {
                 if (TreeViewExplorer.SelectedNode.Level != 0)
-                    return TreeViewExplorer.SelectedNode.FullPath;
+                    return TreeViewExplorer.SelectedNode.FullPath.Split('\\')[1];
                 return default;
             }
         }
@@ -189,6 +207,8 @@ namespace SqlManager
         public event EventHandler TableCreate;
         public event EventHandler DBDeleted;
         public event EventHandler TableDeleted;
+        public event EventHandler DBRenamed;
+        public event EventHandler TableRenamed;
         #endregion
 
 
@@ -200,16 +220,6 @@ namespace SqlManager
         {
             connectionForm.FormClosed -= ConnectionForm_FormClosed;
         }
-        private void BtnClose_Click1(object sender, EventArgs e)
-        {
-            connectionForm.Close();
-        }
-        private void MenuPanel_MouseDown1(object sender, MouseEventArgs e)
-        {
-            connectionForm.MenuPanel.Capture = false;
-            Message m = Message.Create(connectionForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-            this.WndProc(ref m);
-        }
 
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -220,17 +230,19 @@ namespace SqlManager
             
             TreeViewExplorer.AfterSelect += TreeViewExplorer_AfterSelect;
             GridContent.KeyDown += GridContent_KeyDown;
-            btnAddDB.Click += CreateDB;
+            btnAddDB.Click += ShowDBForm;
             btnRefresh.Click += Refresh;
             btnDeleteDB.Click += DeleteDB;
             GridContent.SelectionChanged += GridContent_SelectionChanged;
             GridContent.DataError += GridContent_DataError;
             GridContent.CellValueChanged += GridContent_CellValueChanged;
             TreeViewExplorer.MouseClick += TreeViewExplorer_MouseClick;
-            DBContextMenu.Items[0].Click += CreateTable;
-            DBContextMenu.Items[1].Click += DeleteDB;
-            TableContextMenu.Items[0].Click += DeleteTable;
-            RowContextMenu.Items[0].Click += DeleteRow;
+            CreateTableTSMItem.Click += CreateTable;
+            DeleteDBTSMItem.Click += DeleteDB;
+            RenameDBTSMItem.Click += Rename;
+            DeleteTableTSMItem.Click += DeleteTable;
+            RenameTableTSMItem.Click += Rename;
+            DeleteRowTSMItem.Click += DeleteRow;
             GridContent.MouseClick += GridContent_MouseClick;
 
 
@@ -254,36 +266,38 @@ namespace SqlManager
         private void TreeViewExplorer_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (TreeViewExplorer.SelectedNode.Level > 0)
+            {
+                _currentDB = TreeViewExplorer.SelectedNode.FullPath.Split('\\')[0];
                 TableSelected?.Invoke(this, EventArgs.Empty);
+            }
+            else
+                _currentDB = TreeViewExplorer.SelectedNode.Text;
         }
         private void GridContent_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyValue == (char)Keys.F)
             {
                 //TODO Допистаь окно поиска в таблице
+                
             }
             if(e.Control && e.KeyValue == (char)Keys.S)
             {
-                createTableForm = new CreateTableForm();
-                createTableForm.btnCreateTable.Click += BtnCreateTable_Click;
-                createTableForm.btnClose.Click += BtnClose_Click2;
-                createTableForm.MenuPanel.MouseDown += MenuPanel_MouseDown3;
-                createTableForm.ShowDialog(this);
+                ShowTableForm(sender, EventArgs.Empty);
             }
         }
-
-        private void MenuPanel_MouseDown3(object sender, MouseEventArgs e)
+        private void ShowTableForm(object sender, EventArgs e)
         {
-            createTableForm.MenuPanel.Capture = false;
-            Message m = Message.Create(createTableForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-            this.WndProc(ref m);
+            if(tableForm == null)
+            {
+                tableForm = new TableForm();
+                tableForm.btnClose.Click += BtnClose_Click;
+                tableForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+                tableForm.btnActionTable.Click += CreateNewTable;
+            }
+            tableForm.fldTableName.Text = "";
+            tableForm.ShowDialog(this);
         }
-        private void BtnClose_Click2(object sender, EventArgs e)
-        {
-            createTableForm.Close();
-        }
-
-        private void BtnCreateTable_Click(object sender, EventArgs e)
+        private void CreateNewTable(object sender, EventArgs e)
         {
             TableCreated?.Invoke(this, EventArgs.Empty);
         }
@@ -330,28 +344,24 @@ namespace SqlManager
             }
 
         }
-        private void CreateDB(object sender, EventArgs e)
+        private void ShowDBForm(object sender, EventArgs e)
         {
-            createDBForm = new CreateDBForm();
-            createDBForm.MenuPanel.MouseDown += MenuPanel_MouseDown2;
-            createDBForm.btnClose.Click += CreateDBFormClose;
-            createDBForm.btnCreateDB.Click += BtnCreateDB_Click;
-            createDBForm.ShowDialog(this);
+            if(dbForm == null)
+            {
+                dbForm = new DBForm();
+                dbForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+                dbForm.btnClose.Click += DBFormClose;
+                dbForm.btnActionDB.Click += CreateDB;
+            }
+            dbForm.fldDBName.Text = "";
+            dbForm.ShowDialog(this);
             
         }
-
-        private void MenuPanel_MouseDown2(object sender, MouseEventArgs e)
+        private void DBFormClose(object sender, EventArgs e)
         {
-            createDBForm.MenuPanel.Capture = false;
-            Message m = Message.Create(createDBForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-            this.WndProc(ref m);
+            dbForm.Close();
         }
-        private void CreateDBFormClose(object sender, EventArgs e)
-        {
-            createDBForm.Close();
-        }
-
-        private void BtnCreateDB_Click(object sender, EventArgs e)
+        private void CreateDB(object sender, EventArgs e)
         {
             DBCreated?.Invoke(this, EventArgs.Empty);
         }
@@ -379,18 +389,82 @@ namespace SqlManager
         {
             TableDeleted?.Invoke(this, EventArgs.Empty);
         }
+        private void Rename(object sender, EventArgs e)
+        {
+            TreeViewExplorer.LabelEdit = true;
+            if (!TreeViewExplorer.SelectedNode.IsEditing)
+            {
+                TreeViewExplorer.SelectedNode.BeginEdit();
+            }
+            TreeViewExplorer.AfterLabelEdit += TreeViewExplorer_AfterLabelEdit;
+        }
+        private void TreeViewExplorer_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            e.Node.EndEdit(false);
+            TreeViewExplorer.LabelEdit = false;
+            if (e.Node.Tag.ToString() == "DB")
+            {
+                DBName = e.Label;
+                RenameDB(this, EventArgs.Empty);
+            }
+            if (e.Node.Tag.ToString() == "Table")
+            {
+                TableName = e.Label;
+                RenameTable(this, EventArgs.Empty);
+            }
 
+        }
+        private void RenameDB(object sender, EventArgs e)
+        {
+            DBRenamed?.Invoke(this, EventArgs.Empty);
+        }
+        private void RenameTable(object sender, EventArgs e)
+        {
+            TableRenamed?.Invoke(this, EventArgs.Empty);
+        }
 
         #region Меню
         private void MenuPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            MenuPanel.Capture = false;
-            Message m = Message.Create(this.Handle, 161, new IntPtr(2), IntPtr.Zero);
+            Message m = default;
+            switch ((sender as Panel).Parent.Name)
+            {
+                case "MainForm":
+                    MenuPanel.Capture = false;
+                    m = Message.Create(this.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
+                case "ConnectionForm":
+                    connectionForm.MenuPanel.Capture = false;
+                    m = Message.Create(connectionForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
+                case "dbForm":
+                    dbForm.MenuPanel.Capture = false;
+                    m = Message.Create(dbForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
+                case "tableForm":
+                    tableForm.MenuPanel.Capture = false;
+                    m = Message.Create(tableForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
+            }
             this.WndProc(ref m);
         }
         private void BtnClose_Click(object sender, EventArgs e)
         {
-            this.Close();
+            switch ((sender as Button).Parent.Parent.Name)
+            {
+                case "MainForm":
+                    this.Close();
+                    break;
+                case "ConnectionForm":
+                    connectionForm.Close();
+                    break;
+                case "dbForm":
+                    dbForm.Close();
+                    break;
+                case "tableForm":
+                    tableForm.Close();
+                    break;
+            }
         }
         private void BtnMinimize_Click(object sender, EventArgs e)
         {

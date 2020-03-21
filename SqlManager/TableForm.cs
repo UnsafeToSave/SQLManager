@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace SqlManager
 {
-    public partial class CreateDBForm : Form
+    public partial class TableForm : Form
     {
-        public CreateDBForm()
+        public TableForm()
         {
             InitializeComponent();
         }

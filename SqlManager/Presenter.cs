@@ -35,16 +35,35 @@ namespace SqlManager
             _view.TableCreated += _view_TableCreated;
             _view.DBDeleted += _view_DBDeleted;
             _view.TableDeleted += _view_TableDeleted;
+            _view.DBRenamed += _view_DBRenamed;
+            _view.TableRenamed += _view_TableRenamed;
             
 
         }
 
+        private void _view_TableRenamed(object sender, EventArgs e)
+        {
+            if (_message.ShowWarningMessage($"Переименовать таблицу {_view.CurrentTable}"))
+            {
+                _dataComposer.RenameTable(_view.CurrentDB, _view.CurrentTable, _view.TableName);
+                _view.Explorer = _dataComposer.GetDataBases(_view.ServerName);
+            }
+        }
+
+        private void _view_DBRenamed(object sender, EventArgs e)
+        {
+            if(_message.ShowWarningMessage($"Переименовать базу {_view.CurrentDB}"))
+            {
+                _dataComposer.RenameDB(_view.CurrentDB, _view.DBName);
+                _view.Explorer = _dataComposer.GetDataBases(_view.ServerName);
+            }
+        }
 
         private void _view_TableDeleted(object sender, EventArgs e)
         {
             if (_message.ShowWarningMessage("Вы действительно хотите удалить таблицу"))
             {
-                _dataComposer.DeleteTable(_view.PathToTable);
+                _dataComposer.DeleteTable(_view.CurrentDB, _view.CurrentTable);
                 _message.ShowMessage("База данных удалена");
                 _view.Explorer = _dataComposer.GetDataBases(_view.ServerName);
             }
@@ -66,9 +85,9 @@ namespace SqlManager
 
         private void _view_TableCreated(object sender, EventArgs e)
         {
-            if (_view.CreateTableName != "")
+            if (_view.TableName != "")
             {
-                if(_dataComposer.CreateTable(_view.CurrentDB, _view.CreateTableName))
+                if(_dataComposer.CreateTable(_view.CurrentDB, _view.TableName))
                 {
                     _view.Explorer = _dataComposer.GetDataBases(_view.ServerName);
                     _message.ShowMessage("Таблица успешно создана");
@@ -100,9 +119,9 @@ namespace SqlManager
 
         private void _view_DBCreated(object sender, EventArgs e)
         {
-            if (_view.CreateDBName != "")
+            if (_view.DBName != "")
             {
-                if (_dataComposer.CreateDB(_view.CreateDBName))
+                if (_dataComposer.CreateDB(_view.DBName))
                 {
                     _message.ShowMessage("База данных успешно создана");
                 }
@@ -124,7 +143,7 @@ namespace SqlManager
             else
             {
                 DataTable table;
-                if (_dataComposer.TryGetTable(_view.PathToTable, out table))
+                if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable, out table))
                     _view.Content = table;
                 else
                     _view_Connect(this, EventArgs.Empty);
@@ -135,7 +154,7 @@ namespace SqlManager
 
         private void _view_RowDeleted(object sender, EventArgs e)
         {
-            if (_message.ShowWarningMessage($"Вы действительно хотите удалить запись с Id {_view.CurrentRow.Rows[_view.IndexRow][0].ToString()}! "))
+            if (_message.ShowWarningMessage($"Вы действительно хотите удалить запись с Id {_view.CurrentRow.Rows[0][0].ToString()}! "))
             {
                 _dataComposer.DeleteRow(_view.IndexRow);
                 _message.ShowMessage("Запись удалена");
@@ -146,14 +165,18 @@ namespace SqlManager
 
         private void _view_TableSelect(object sender, EventArgs e)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             DataTable table;
-            if (_dataComposer.TryGetTable(_view.PathToTable, out table))
+            if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable, out table))
                 _view.Content = table;
             else
             {
                 _message.ShowErrorMessage("Таблица не найдена");
                 _view_Connect(this, EventArgs.Empty);
             }
+            sw.Stop();
+            MessageBox.Show((sw.ElapsedMilliseconds).ToString());
         }
 
         private void _view_Connect(object sender, EventArgs e)

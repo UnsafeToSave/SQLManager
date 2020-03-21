@@ -12,7 +12,7 @@ namespace SQLTools
     public interface IDataComposer
     {
         TreeNode[] GetDataBases(string ServerName);
-        bool TryGetTable(string selectTable, out DataTable table);
+        bool TryGetTable(string dbName, string tableName, out DataTable table);
         void DeleteRow(int index);
         void ChangeRow();
         bool CreateDB(string dbName);
@@ -20,7 +20,9 @@ namespace SQLTools
         DataTable GetCreateTable();
         bool CreateTable(string dbName, string tableName);
         void DeleteDB(string dbName);
-        void DeleteTable(string selectTable);
+        void DeleteTable(string dbName, string tableName);
+        void RenameDB(string selectDB, string newName);
+        void RenameTable(string dbName, string tableName, string newName);
         void CloseApp();
     }
 
@@ -65,11 +67,10 @@ namespace SQLTools
             return treeChild;
         }
 
-        public bool TryGetTable(string selectTable, out DataTable table)
+        public bool TryGetTable(string dbName, string tableName, out DataTable table)
         {
             //TODO написать проверку на существование каталога и таблицы;
-            string[] selectInfo = selectTable.Split('\\');
-            table = GetTable(selectInfo[0], selectInfo[1]);
+            table = GetTable(dbName, tableName);
             return true;
         }
 
@@ -113,10 +114,19 @@ namespace SQLTools
             Tools.DeleteDB(dbName);
         }
 
-        public void DeleteTable(string selectTable)
+        public void DeleteTable(string dbName, string tableName)
         {
-            string[] selectInfo = selectTable.Split('\\');
-            Tools.DeleteTable(selectInfo[0], selectInfo[1]);
+            Tools.DeleteTable(dbName, tableName);
+        }
+
+        public void RenameDB(string selectDB, string newName)
+        {
+            Tools.RenameDB(selectDB, newName);
+        }
+
+        public void RenameTable(string dbName, string tableName, string newName)
+        {
+            Tools.RenameTable(dbName, tableName, newName);
         }
     }
 }
