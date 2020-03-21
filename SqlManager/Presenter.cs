@@ -165,8 +165,6 @@ namespace SqlManager
 
         private void _view_TableSelect(object sender, EventArgs e)
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
             DataTable table;
             if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable, out table))
                 _view.Content = table;
@@ -175,8 +173,6 @@ namespace SqlManager
                 _message.ShowErrorMessage("Таблица не найдена");
                 _view_Connect(this, EventArgs.Empty);
             }
-            sw.Stop();
-            MessageBox.Show((sw.ElapsedMilliseconds).ToString());
         }
 
         private void _view_Connect(object sender, EventArgs e)

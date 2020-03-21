@@ -290,10 +290,10 @@ namespace SqlManager
             if(tableForm == null)
             {
                 tableForm = new TableForm();
-                tableForm.btnClose.Click += BtnClose_Click;
-                tableForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
-                tableForm.btnActionTable.Click += CreateNewTable;
             }
+            tableForm.btnClose.Click += BtnClose_Click;
+            tableForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+            tableForm.btnActionTable.Click += CreateNewTable;
             tableForm.fldTableName.Text = "";
             tableForm.ShowDialog(this);
         }
@@ -349,10 +349,10 @@ namespace SqlManager
             if(dbForm == null)
             {
                 dbForm = new DBForm();
-                dbForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
-                dbForm.btnClose.Click += DBFormClose;
-                dbForm.btnActionDB.Click += CreateDB;
             }
+            dbForm.MenuPanel.MouseDown += MenuPanel_MouseDown;
+            dbForm.btnClose.Click += DBFormClose;
+            dbForm.btnActionDB.Click += CreateDB;
             dbForm.fldDBName.Text = "";
             dbForm.ShowDialog(this);
             
@@ -437,11 +437,11 @@ namespace SqlManager
                     connectionForm.MenuPanel.Capture = false;
                     m = Message.Create(connectionForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
-                case "dbForm":
+                case "DBForm":
                     dbForm.MenuPanel.Capture = false;
                     m = Message.Create(dbForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
-                case "tableForm":
+                case "TableForm":
                     tableForm.MenuPanel.Capture = false;
                     m = Message.Create(tableForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
@@ -458,10 +458,10 @@ namespace SqlManager
                 case "ConnectionForm":
                     connectionForm.Close();
                     break;
-                case "dbForm":
+                case "DBForm":
                     dbForm.Close();
                     break;
-                case "tableForm":
+                case "TableForm":
                     tableForm.Close();
                     break;
             }
