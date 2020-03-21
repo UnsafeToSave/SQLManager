@@ -202,6 +202,8 @@ namespace SQLTools
                                 query += "Not null";
                         }
                     }
+                    if (i == 0)
+                        query += " IDENTITY(1,1) Primary Key";
                     if(currentTable.Rows.Count > 1)
                         query += ",";
                 }

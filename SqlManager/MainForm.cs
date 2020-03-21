@@ -313,7 +313,7 @@ namespace SqlManager
         }
         private void GridContent_SelectionChanged(object sender, EventArgs e)
         {
-            if(GridContent.Capture && GridContent.Rows.Count > 1 && dataChanged)
+            if(GridContent.Rows.Count > 1 && dataChanged)
             {
                 dataChanged = false;
                 RowChanged?.Invoke(this, EventArgs.Empty);
