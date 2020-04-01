@@ -232,8 +232,8 @@ namespace SQLTools
             var table = new DataTable("Creator");
             List<DataColumn> columns = new List<DataColumn>();
             List<string> columnNames = new List<string>() { 
-                "Имя столбца", 
-                "Тип данных", 
+                "Name", 
+                "Type", 
                 "Nullable" };
             List<Type> columnTypes = new List<Type>() { 
                 typeof(string), 
@@ -308,6 +308,30 @@ namespace SQLTools
             }
         }
 
+        internal static bool SearchRow(string columnName, string value, out int rowIndex)
+        {
+            if (CheckType(value, currentTable.Columns[columnName].DataType))
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+                {
+                    IDbCommand command = new SqlCommand($"Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from {currentTable.TableName} where {columnName} = '{value}')");
+                    command.Connection = connection;
+                    connection.Open();
+                    IDataReader reader = command.ExecuteReader();
+                    reader.Read();
+                    rowIndex = reader.GetInt32(0) - 1;
+                    CloseConnection(connection);
+                }
+            }
+            else
+                rowIndex = -1;
+
+            if (rowIndex >= 0)
+                return true;
+            else
+                return false;
+        }
+
         internal static void CloseConnections()
         {
             SqlConnection.ClearAllPools();
@@ -315,25 +339,96 @@ namespace SQLTools
 
         internal static bool IsExist(string fullPath)
         {
-            //TODO написать метод проверки на существование объекта(базы, таблицы)
-            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            
+            var path = fullPath.Split('\\');
+            switch (path.Length)
             {
-                //IDbCommand command = new SqlCommand($"Select Count form sys.databases where = '{objectName}'");
-                //command.Connection = connection;
-                //connection.Open();
+                case 1:
+                    CloseConnections();
+                    _connectionStr.InitialCatalog = "";
+                    using(SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+                    {
+                        IDbCommand command = new SqlCommand($"select Count(name) from sys.databases where name = '{path[0]}'");
+                        command.Connection = connection;
+                        connection.Open();
 
-                //IDataReader reader = command.ExecuteReader();
-                //if (reader.GetInt32(0) >= 1)
-                //    return true;
-                //else
-                //    return false;
-                return true;
+                        IDataReader reader = command.ExecuteReader();
+                        reader.Read();
+                        if(reader.GetInt32(0) == 1)
+                        {
+                            CloseConnection(connection);
+                            return true;
+                        }
+                        CloseConnection(connection);
+                        return false;
+                    }
+                case 2:
+                    if (IsExist(path[0]))
+                    {
+                        CloseConnections();
+                        _connectionStr.InitialCatalog = path[0];
+                        using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+                        {
+                            IDbCommand command = new SqlCommand($"Select Count(name) from sys.tables where name = '{path[1]}'");
+                            command.Connection = connection;
+                            connection.Open();
+
+                            IDataReader reader = command.ExecuteReader();
+                            reader.Read();
+                            if(reader.GetInt32(0) == 1)
+                            {
+                                CloseConnection(connection);
+                                return true;
+                            }
+                            CloseConnection(connection);
+                            return false;
+                        }
+                    }
+                    return false;
             }
+            return false;
         }
 
-        internal static bool IsLock(string fullPath)
+        internal static bool CheckType(string value, Type type)
         {
+            switch (type.Name)
+            {
+                case "String":
+                    return value as string != null;
+                case "Int32":
+                    return int.TryParse(value, out int ir);
+                case "Boolean":
+                    return bool.TryParse(value, out bool br);
+                case "TimeSpan":
+                    return TimeSpan.TryParse(value, out TimeSpan tsr);
+                case "DateTime":
+                    return DateTime.TryParse(value, out DateTime dtr);
+                case "Decimal":
+                    return decimal.TryParse(value, out decimal dr);
+            }
             return false;
+        }
+
+        internal static bool IsLockDB(string dbName)
+        {
+            CloseConnections();
+            _connectionStr.InitialCatalog = "";
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand($"select Count(Distinct dbid) from sys.sysprocesses where db_name(dbid) = '{dbName}'");
+                command.Connection = connection;
+                connection.Open();
+
+                IDataReader reader = command.ExecuteReader();
+                reader.Read();
+                if (reader.GetInt32(0) == 1)
+                {
+                    CloseConnection(connection);
+                    return true;
+                }
+                CloseConnection(connection);
+                return false;
+            }
         }
 
         private static void Update()

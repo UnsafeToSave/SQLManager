@@ -23,6 +23,9 @@ namespace SQLTools
         void DeleteTable(string dbName, string tableName);
         void RenameDB(string selectDB, string newName);
         void RenameTable(string dbName, string tableName, string newName);
+        bool SearchRow(string columnName, string value, out int index);
+        bool IsLockDB(string dbName);
+        bool IsExist(string fullPath);
         void CloseApp();
     }
 
@@ -69,9 +72,14 @@ namespace SQLTools
 
         public bool TryGetTable(string dbName, string tableName, out DataTable table)
         {
-            //TODO написать проверку на существование каталога и таблицы;
-            table = GetTable(dbName, tableName);
-            return true;
+            var fullPath = dbName + "\\" + tableName;
+            if (Tools.IsExist(fullPath))
+            {
+                table = GetTable(dbName, tableName);
+                return true;
+            }
+            table = default;
+            return false;
         }
 
         private DataTable GetTable(string InitialCatalog, string tableName)
@@ -83,7 +91,7 @@ namespace SQLTools
         {
             Tools.DeleteRow(index);
         }
-
+         
         public void ChangeRow()
         {
             Tools.ChangeRow();
@@ -127,6 +135,21 @@ namespace SQLTools
         public void RenameTable(string dbName, string tableName, string newName)
         {
             Tools.RenameTable(dbName, tableName, newName);
+        }
+
+        public bool SearchRow(string columnName, string value, out int index)
+        {
+            return Tools.SearchRow(columnName, value, out  index);
+        }
+
+        public bool IsLockDB(string dbName)
+        {
+            return Tools.IsLockDB(dbName);
+        }
+
+        public bool IsExist(string fullPath)
+        {
+            return Tools.IsExist(fullPath);
         }
     }
 }

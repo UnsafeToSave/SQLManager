@@ -62,22 +62,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionForm.cs">
+    <Compile Include="Forms\ConnectionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConnectionForm.Designer.cs">
+    <Compile Include="Forms\ConnectionForm.Designer.cs">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DBForm.cs">
+    <Compile Include="Forms\DBForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DBForm.Designer.cs">
+    <Compile Include="Forms\DBForm.Designer.cs">
       <DependentUpon>DBForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TableForm.cs">
+    <Compile Include="Forms\SearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TableForm.Designer.cs">
+    <Compile Include="Forms\SearchForm.Designer.cs">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TableForm.Designer.cs">
       <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
@@ -90,13 +96,16 @@
     <Compile Include="Presenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ConnectionForm.resx">
+    <EmbeddedResource Include="Forms\ConnectionForm.resx">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DBForm.resx">
+    <EmbeddedResource Include="Forms\DBForm.resx">
       <DependentUpon>DBForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TableForm.resx">
+    <EmbeddedResource Include="Forms\SearchForm.resx">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TableForm.resx">
       <DependentUpon>TableForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,6 +17,42 @@ namespace SqlManager
         Normal,
         Create,
     }
+    enum Types
+    {
+        Bit,
+        Tinyint,
+        Smallint,
+        Int,
+        Bigint,
+        Numeric,
+        Decimal,
+        Smallmoney,
+        Money,
+        Float,
+        Real,
+        Char,
+        Varchar,
+        Text,
+        Nchar,
+        Nvarchar,
+        Ntext,
+        Date,
+        Datetime,
+        Datetime2,
+        Smalldatetime,
+        Time,
+        Datetimeoffset,
+        Binary,
+        Varbinary,
+        Image,
+        Cursor,
+        Table,
+        Sql_variant,
+        Rowversion,
+        Xml,
+        Uniqueidentifier,
+        Hierarchyid
+    }
 
     public interface IMainForm
     {
@@ -24,10 +61,13 @@ namespace SqlManager
         string TableName { set; get; }
         string CurrentDB { get; set; }
         string CurrentTable { get; }
+        string FullPath { get; }
+        string SearchColumn { get; }
+        string SearchValue { get; }
         TreeNode[] Explorer { set; }
         DataTable Content { set; }
         DataTable CurrentRow { get; }
-        int IndexRow { get; }
+        int SelectedRowIndex { get; set; }
 
         
         event EventHandler Connected;
@@ -44,6 +84,7 @@ namespace SqlManager
         event EventHandler TableDeleted;
         event EventHandler DBRenamed;
         event EventHandler TableRenamed;
+        event EventHandler RowSearched;
 
     }
     
@@ -52,6 +93,7 @@ namespace SqlManager
         ConnectionForm connectionForm;
         DBForm dbForm; 
         TableForm tableForm;
+        SearchForm searchForm;
         ImageList images;
         string _currentDB;
         bool dataChanged = false;
@@ -144,8 +186,33 @@ namespace SqlManager
                 return default;
             }
         }
-        public int IndexRow
+        public string FullPath
         {
+            get
+            {
+                return TreeViewExplorer.SelectedNode.FullPath;
+            }
+        }
+        public string SearchColumn
+        {
+            get
+            {
+                return searchForm.cmbSearch.SelectedItem.ToString();
+            }
+        }
+        public string SearchValue
+        {
+            get
+            {
+                return searchForm.fldSearch.Text;
+            }
+        }
+        public int SelectedRowIndex
+        {
+            set
+            {
+                GridContent.Rows[value].Selected = true;
+            }
             get
             {
                 return GridContent.CurrentRow.Index;
@@ -209,6 +276,7 @@ namespace SqlManager
         public event EventHandler TableDeleted;
         public event EventHandler DBRenamed;
         public event EventHandler TableRenamed;
+        public event EventHandler RowSearched;
         #endregion
 
 
@@ -244,6 +312,7 @@ namespace SqlManager
             RenameTableTSMItem.Click += Rename;
             DeleteRowTSMItem.Click += DeleteRow;
             GridContent.MouseClick += GridContent_MouseClick;
+            GridContent.EditingControlShowing += GridContent_EditingControlShowing;
 
 
             MenuPanel.MouseDown += MoveForm;
@@ -251,6 +320,18 @@ namespace SqlManager
             btnClose.Click += CloseForm;
             btnMinimize.Click += MinimizeWindow;
         }
+
+        private void GridContent_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (GridContent.CurrentCell.ColumnIndex == 1 && ContentMode == Mode.Create)
+            {
+                ComboBox combo = e.Control as ComboBox;
+                if (combo == null)
+                    return;
+                combo.DropDownStyle = ComboBoxStyle.DropDown;
+            }
+        }
+
         private void GridContent_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -278,8 +359,7 @@ namespace SqlManager
         {
             if (e.Control && e.KeyValue == (char)Keys.F)
             {
-                //TODO Допистаь окно поиска в таблице
-                
+                ShowSearchForm(sender, EventArgs.Empty);
             }
             if(e.Control && e.KeyValue == (char)Keys.S)
             {
@@ -298,10 +378,38 @@ namespace SqlManager
             tableForm.fldTableName.Text = "";
             tableForm.ShowDialog(this);
         }
+        private void ShowSearchForm(object sender, EventArgs e)
+        {
+            if(searchForm == null)
+            {
+                searchForm = new SearchForm();
+                searchForm.btnClose.Click += CloseForm;
+                searchForm.MenuPanel.MouseDown += MoveForm;
+                searchForm.btnSearch.Click += SearchRow;
+                searchForm.fldSearch.KeyDown += SearchRow;
+            }
+            searchForm.cmbSearch.Items.Clear();
+            searchForm.fldSearch.Text = "";
+            for (int i = 0; i < GridContent.Columns.Count; i++)
+            {
+                searchForm.cmbSearch.Items.Add(GridContent.Columns[i].HeaderText);
+            }
+            searchForm.cmbSearch.SelectedIndex = 0;
+            searchForm.ShowDialog(this);
+        }
         private void CreateNewTable(object sender, EventArgs e)
         {
-            ContentMode = Mode.Normal;
+            for(int i = 0; i < GridContent.Rows.Count - 1; i++)
+            {
+                GridContent.Rows[i].Cells[2].Value = GridContent.Rows[i].Cells[1].Value; 
+            }
             TableCreated?.Invoke(this, EventArgs.Empty);
+            tableForm.btnActionTable.Click -= CreateNewTable;
+
+            GridContent.Columns.RemoveAt(0);
+            ArrayList Empty = new ArrayList();
+            GridContent.DataSource = Empty;
+            ContentMode = Mode.Normal;
         }
         private void DeleteRow(object sender, EventArgs e)
         {
@@ -313,7 +421,7 @@ namespace SqlManager
         }
         private void GridContent_SelectionChanged(object sender, EventArgs e)
         {
-            if(GridContent.Rows.Count > 1 && dataChanged)
+            if(GridContent.Rows.Count > 1 && dataChanged && ContentMode == Mode.Normal)
             {
                 dataChanged = false;
                 RowChanged?.Invoke(this, EventArgs.Empty);
@@ -379,6 +487,18 @@ namespace SqlManager
         private void CreateTable(object sender, EventArgs e)
         {
             TableCreate?.Invoke(this, EventArgs.Empty);
+
+            var type = Enum.GetNames(typeof(Types)).Select(x=> new {Name = x, Value = x}).ToList();
+            DataGridViewComboBoxColumn TypeBox = new DataGridViewComboBoxColumn();
+            TypeBox.ValueType = typeof(string);
+            TypeBox.DataSource = type;
+            TypeBox.DisplayMember = "Name";
+            TypeBox.ValueMember = "Value";
+            TypeBox.HeaderText = "Тип данных";
+            TypeBox.FlatStyle = FlatStyle.Flat;
+            GridContent.Columns.Insert(1, TypeBox);
+            GridContent.Columns[2].Visible = false;
+
             ContentMode = Mode.Create;
             CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
         }
@@ -402,19 +522,21 @@ namespace SqlManager
         }
         private void TreeViewExplorer_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
-            e.Node.EndEdit(false);
-            TreeViewExplorer.LabelEdit = false;
-            if (e.Node.Tag.ToString() == "DB")
+            if(TreeViewExplorer.LabelEdit == true)
             {
-                DBName = e.Label;
-                RenameDB(this, EventArgs.Empty);
+                e.Node.EndEdit(false);
+                TreeViewExplorer.LabelEdit = false;
+                if (e.Node.Tag.ToString() == "DB")
+                {
+                    DBName = e.Label;
+                    RenameDB(this, EventArgs.Empty);
+                }
+                if (e.Node.Tag.ToString() == "Table")
+                {
+                    TableName = e.Label;
+                    RenameTable(this, EventArgs.Empty);
+                }
             }
-            if (e.Node.Tag.ToString() == "Table")
-            {
-                TableName = e.Label;
-                RenameTable(this, EventArgs.Empty);
-            }
-
         }
         private void RenameDB(object sender, EventArgs e)
         {
@@ -423,6 +545,15 @@ namespace SqlManager
         private void RenameTable(object sender, EventArgs e)
         {
             TableRenamed?.Invoke(this, EventArgs.Empty);
+        }
+        private void SearchRow(object sender, KeyEventArgs e)
+        {
+            if ((sender as Control).Name == "fldSearch" && e.KeyData == Keys.Enter)
+                SearchRow(this, EventArgs.Empty);
+        }
+        private void SearchRow(object sender, EventArgs e)
+        {
+                RowSearched?.Invoke(this, EventArgs.Empty);
         }
 
         #region Меню
@@ -447,6 +578,10 @@ namespace SqlManager
                     tableForm.MenuPanel.Capture = false;
                     m = Message.Create(tableForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
+                case "SearchForm":
+                    searchForm.MenuPanel.Capture = false;
+                    m = Message.Create(searchForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
             }
             this.WndProc(ref m);
         }
@@ -465,6 +600,9 @@ namespace SqlManager
                     break;
                 case "TableForm":
                     tableForm.Close();
+                    break;
+                case "SearchForm":
+                    searchForm.Close();
                     break;
             }
         }
