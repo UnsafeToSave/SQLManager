@@ -121,7 +121,7 @@ namespace SqlManager
 
         private void TableCreate(object sender, EventArgs e)
         {
-            _view.Content = _dataComposer.GetCreateTable();
+            _view.Content = _dataComposer.GetCreatorTable();
         }
 
         private void Disconnected(object sender, EventArgs e)

@@ -102,13 +102,7 @@ namespace SQLTools
 
         internal static void CreateConnect(string InitialCatalog, string query)
         {
-            _connectionStr = new SqlConnectionStringBuilder
-            {
-                DataSource = _connectionStr.DataSource,
-                InitialCatalog = InitialCatalog,
-                IntegratedSecurity = true
-            };
-
+            _connectionStr.InitialCatalog = InitialCatalog;
             ConfigAdapter(out _adapter, query);
         }
 
@@ -236,7 +230,7 @@ namespace SQLTools
             }
         }
 
-        internal static DataTable GetCreateTable()
+        internal static DataTable GetCreatorTable()
         {
             ClearStaticData();
             var table = new DataTable("Creator");

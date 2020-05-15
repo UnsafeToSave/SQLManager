@@ -21,7 +21,7 @@ namespace SQLTools
         void ChangeRow();
         bool CreateDB(string dbName);
         void Disconnected();
-        DataTable GetCreateTable();
+        DataTable GetCreatorTable();
         bool CreateTable(string dbName, string tableName);
         void DeleteDB(string dbName);
         void DeleteTable(string dbName, string tableName);
@@ -125,9 +125,9 @@ namespace SQLTools
             return Tools.CreateTable(dbName, tableName);
         }
 
-        public DataTable GetCreateTable()
+        public DataTable GetCreatorTable()
         {
-            return Tools.GetCreateTable();
+            return Tools.GetCreatorTable();
         }
 
         public void DeleteDB(string dbName)
