@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,8 +13,10 @@ namespace SQLTools
 {
     public interface IDataComposer
     {
-        TreeNode[] GetDataBases(string ServerName);
-        bool TryGetTable(string dbName, string tableName, out DataTable table);
+        void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "");
+        TreeNode[] GetDBNames();
+        bool TryGetTable(string dbName, string tableName);
+        DataTable GetTable(string InitialCatalog, string tableName);
         void DeleteRow(int index);
         void ChangeRow();
         bool CreateDB(string dbName);
@@ -23,7 +27,8 @@ namespace SQLTools
         void DeleteTable(string dbName, string tableName);
         void RenameDB(string selectDB, string newName);
         void RenameTable(string dbName, string tableName, string newName);
-        bool SearchRow(string columnName, string value, out int index);
+        bool SearchRow(string columnName, string value, int selectRowId, out int index);
+        void DataFilter(string filter);
         bool IsLockDB(string dbName);
         bool IsExist(string fullPath);
         void CloseApp();
@@ -38,16 +43,24 @@ namespace SQLTools
         }
 
 
-        public TreeNode[] GetDataBases(string ServerName)
+        public void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "")
         {
-            var db = Tools.GetListDB(ServerName);
+            Tools.ConfigConnection(dataSource, method, login, password);
+        }
+
+        public TreeNode[] GetDBNames()
+        {
+            var db = Tools.GetDBNames();
             var tree = new TreeNode[db.Count];
 
+            
             for (int i = 0; i < tree.Length; i++)
             {
-                tree[i] = new TreeNode(db[i], 0, 1, GetTables(db[i]));
-                tree[i].Tag = "DB";
-                if(tree[i].GetNodeCount(false) == 0)
+                tree[i] = new TreeNode(db[i], 0, 1, GetTableNames(db[i]))
+                {
+                    Tag = "DB"
+                };
+                if (tree[i].GetNodeCount(false) == 0)
                 {
                     tree[i].ForeColor = System.Drawing.Color.Gray;
                     tree[i].ImageIndex = 4;
@@ -56,33 +69,33 @@ namespace SQLTools
             return tree;
         }
 
-        private TreeNode[] GetTables(string dbName)
+        private TreeNode[] GetTableNames(string dbName)
         {
-            var tables = Tools.GetListTables(dbName);
+            var tables = Tools.GetTableNames(dbName);
 
             var treeChild = new TreeNode[tables.Count];
 
             for (int i = 0; i < treeChild.Length; i++)
             {
-                treeChild[i] = new TreeNode(tables[i], 2, 3);
-                treeChild[i].Tag = "Table";
+                treeChild[i] = new TreeNode(tables[i], 2, 3)
+                {
+                    Tag = "Table"
+                };
             }
             return treeChild;
         }
 
-        public bool TryGetTable(string dbName, string tableName, out DataTable table)
+        public bool TryGetTable(string dbName, string tableName)
         {
             var fullPath = dbName + "\\" + tableName;
             if (Tools.IsExist(fullPath))
             {
-                table = GetTable(dbName, tableName);
                 return true;
             }
-            table = default;
             return false;
         }
 
-        private DataTable GetTable(string InitialCatalog, string tableName)
+        public  DataTable GetTable(string InitialCatalog, string tableName)
         {
             return Tools.GetTable(InitialCatalog, tableName);
         }
@@ -137,9 +150,9 @@ namespace SQLTools
             Tools.RenameTable(dbName, tableName, newName);
         }
 
-        public bool SearchRow(string columnName, string value, out int index)
+        public bool SearchRow(string columnName, string value, int selectRowId, out int index)
         {
-            return Tools.SearchRow(columnName, value, out  index);
+            return Tools.SearchRow(columnName, value, selectRowId, out  index);
         }
 
         public bool IsLockDB(string dbName)
@@ -150,6 +163,11 @@ namespace SQLTools
         public bool IsExist(string fullPath)
         {
             return Tools.IsExist(fullPath);
+        }
+
+        public void DataFilter (string filter)
+        {
+           Tools.DataFilter(filter);
         }
     }
 }

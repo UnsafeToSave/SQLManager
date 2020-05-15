@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlManager", "SqlManager\Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLTools", "SQLTools\SQLTools.csproj", "{6F43BBE1-431B-4050-B1BE-B14357987908}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2DDC25D4-DD51-4A54-B23B-405E83A2125C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSQLTools", "TestSQLTools\TestSQLTools.csproj", "{5D0E9964-5ADF-4D10-AA93-83557A5A48B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{6F43BBE1-431B-4050-B1BE-B14357987908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F43BBE1-431B-4050-B1BE-B14357987908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F43BBE1-431B-4050-B1BE-B14357987908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D0E9964-5ADF-4D10-AA93-83557A5A48B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D0E9964-5ADF-4D10-AA93-83557A5A48B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D0E9964-5ADF-4D10-AA93-83557A5A48B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D0E9964-5ADF-4D10-AA93-83557A5A48B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D0E9964-5ADF-4D10-AA93-83557A5A48B2} = {2DDC25D4-DD51-4A54-B23B-405E83A2125C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A11E4BBB-6373-4D70-A338-02ECABFDC87F}

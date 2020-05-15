@@ -29,20 +29,20 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.GridContent = new System.Windows.Forms.DataGridView();
             this.TreeViewExplorer = new System.Windows.Forms.TreeView();
-            this.DBContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ExplorerDBContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.CreateTableTSMItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteDBTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RenameDBTSMItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.TableContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.DeleteTableTSMItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteDBTSMItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExplorerTableContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.RenameTableTSMItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteTableTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuPanel = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -50,17 +50,20 @@
             this.btnClose = new System.Windows.Forms.Button();
             this.btnAddDB = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnDeleteDB = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.RowContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.GridRowContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.FindValueTSMItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FilterTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteRowTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.GridContent)).BeginInit();
-            this.DBContextMenu.SuspendLayout();
-            this.TableContextMenu.SuspendLayout();
+            this.ExplorerDBContext.SuspendLayout();
+            this.ExplorerTableContext.SuspendLayout();
             this.MenuPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
-            this.RowContextMenu.SuspendLayout();
+            this.GridRowContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // GridContent
@@ -70,71 +73,71 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GridContent.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             this.GridContent.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.Info;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.Info;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.GridContent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridContent.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridContent.DefaultCellStyle = dataGridViewCellStyle2;
             this.GridContent.EnableHeadersVisualStyles = false;
             this.GridContent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.GridContent.Location = new System.Drawing.Point(189, 53);
+            this.GridContent.Location = new System.Drawing.Point(169, 36);
             this.GridContent.MultiSelect = false;
             this.GridContent.Name = "GridContent";
             this.GridContent.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridContent.RowHeadersDefaultCellStyle = dataGridViewCellStyle7;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.White;
-            this.GridContent.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridContent.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
+            this.GridContent.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.GridContent.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             this.GridContent.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.White;
             this.GridContent.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
             this.GridContent.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.GridContent.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.GridContent.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridContent.Size = new System.Drawing.Size(674, 550);
+            this.GridContent.Size = new System.Drawing.Size(724, 589);
             this.GridContent.TabIndex = 1;
             // 
             // TreeViewExplorer
             // 
             this.TreeViewExplorer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeViewExplorer.Location = new System.Drawing.Point(12, 53);
+            this.TreeViewExplorer.Location = new System.Drawing.Point(12, 36);
             this.TreeViewExplorer.Name = "TreeViewExplorer";
             this.TreeViewExplorer.ShowPlusMinus = false;
-            this.TreeViewExplorer.Size = new System.Drawing.Size(171, 514);
+            this.TreeViewExplorer.Size = new System.Drawing.Size(151, 553);
             this.TreeViewExplorer.TabIndex = 5;
             // 
-            // DBContextMenu
+            // ExplorerDBContext
             // 
-            this.DBContextMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.DBContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ExplorerDBContext.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.ExplorerDBContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreateTableTSMItem,
             this.RenameDBTSMItem,
             this.DeleteDBTSMItem});
-            this.DBContextMenu.Name = "DBСontextMenu";
-            this.DBContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.DBContextMenu.Size = new System.Drawing.Size(189, 70);
+            this.ExplorerDBContext.Name = "DBСontextMenu";
+            this.ExplorerDBContext.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.ExplorerDBContext.Size = new System.Drawing.Size(189, 70);
             // 
             // CreateTableTSMItem
             // 
@@ -144,14 +147,6 @@
             this.CreateTableTSMItem.Size = new System.Drawing.Size(188, 22);
             this.CreateTableTSMItem.Text = "Создать таблицу";
             // 
-            // DeleteDBTSMItem
-            // 
-            this.DeleteDBTSMItem.ForeColor = System.Drawing.Color.White;
-            this.DeleteDBTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteDBTSMItem.Image")));
-            this.DeleteDBTSMItem.Name = "DeleteDBTSMItem";
-            this.DeleteDBTSMItem.Size = new System.Drawing.Size(188, 22);
-            this.DeleteDBTSMItem.Text = "Удалить базу";
-            // 
             // RenameDBTSMItem
             // 
             this.RenameDBTSMItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -160,23 +155,23 @@
             this.RenameDBTSMItem.Size = new System.Drawing.Size(188, 22);
             this.RenameDBTSMItem.Text = "Переименовать базу";
             // 
-            // TableContextMenu
+            // DeleteDBTSMItem
             // 
-            this.TableContextMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.TableContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DeleteDBTSMItem.ForeColor = System.Drawing.Color.White;
+            this.DeleteDBTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteDBTSMItem.Image")));
+            this.DeleteDBTSMItem.Name = "DeleteDBTSMItem";
+            this.DeleteDBTSMItem.Size = new System.Drawing.Size(188, 22);
+            this.DeleteDBTSMItem.Text = "Удалить базу";
+            // 
+            // ExplorerTableContext
+            // 
+            this.ExplorerTableContext.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.ExplorerTableContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.RenameTableTSMItem,
             this.DeleteTableTSMItem});
-            this.TableContextMenu.Name = "TableContextMenu";
-            this.TableContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.TableContextMenu.Size = new System.Drawing.Size(210, 48);
-            // 
-            // DeleteTableTSMItem
-            // 
-            this.DeleteTableTSMItem.ForeColor = System.Drawing.Color.White;
-            this.DeleteTableTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteTableTSMItem.Image")));
-            this.DeleteTableTSMItem.Name = "DeleteTableTSMItem";
-            this.DeleteTableTSMItem.Size = new System.Drawing.Size(209, 22);
-            this.DeleteTableTSMItem.Text = "Удалить таблицу";
+            this.ExplorerTableContext.Name = "TableContextMenu";
+            this.ExplorerTableContext.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.ExplorerTableContext.Size = new System.Drawing.Size(210, 48);
             // 
             // RenameTableTSMItem
             // 
@@ -185,6 +180,14 @@
             this.RenameTableTSMItem.Name = "RenameTableTSMItem";
             this.RenameTableTSMItem.Size = new System.Drawing.Size(209, 22);
             this.RenameTableTSMItem.Text = "Переименовать таблицу";
+            // 
+            // DeleteTableTSMItem
+            // 
+            this.DeleteTableTSMItem.ForeColor = System.Drawing.Color.White;
+            this.DeleteTableTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteTableTSMItem.Image")));
+            this.DeleteTableTSMItem.Name = "DeleteTableTSMItem";
+            this.DeleteTableTSMItem.Size = new System.Drawing.Size(209, 22);
+            this.DeleteTableTSMItem.Text = "Удалить таблицу";
             // 
             // MenuPanel
             // 
@@ -196,7 +199,7 @@
             this.MenuPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.MenuPanel.Location = new System.Drawing.Point(0, 0);
             this.MenuPanel.Name = "MenuPanel";
-            this.MenuPanel.Size = new System.Drawing.Size(875, 30);
+            this.MenuPanel.Size = new System.Drawing.Size(905, 30);
             this.MenuPanel.TabIndex = 7;
             // 
             // pictureBox1
@@ -230,7 +233,7 @@
             this.btnMinimize.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
             this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMinimize.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnMinimize.Location = new System.Drawing.Point(811, 0);
+            this.btnMinimize.Location = new System.Drawing.Point(841, 0);
             this.btnMinimize.Name = "btnMinimize";
             this.btnMinimize.Size = new System.Drawing.Size(32, 30);
             this.btnMinimize.TabIndex = 2;
@@ -245,7 +248,7 @@
             this.btnClose.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.btnClose.Location = new System.Drawing.Point(843, 0);
+            this.btnClose.Location = new System.Drawing.Point(873, 0);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(32, 30);
             this.btnClose.TabIndex = 0;
@@ -271,13 +274,29 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.panel1.Controls.Add(this.btnDisconnect);
             this.panel1.Controls.Add(this.btnDeleteDB);
             this.panel1.Controls.Add(this.btnRefresh);
             this.panel1.Controls.Add(this.btnAddDB);
-            this.panel1.Location = new System.Drawing.Point(12, 573);
+            this.panel1.Location = new System.Drawing.Point(12, 595);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(171, 30);
+            this.panel1.Size = new System.Drawing.Size(151, 30);
             this.panel1.TabIndex = 9;
+            // 
+            // btnDisconnect
+            // 
+            this.btnDisconnect.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnDisconnect.BackgroundImage")));
+            this.btnDisconnect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnDisconnect.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnDisconnect.FlatAppearance.BorderSize = 0;
+            this.btnDisconnect.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(112)))), ((int)(((byte)(255)))), ((int)(((byte)(69)))));
+            this.btnDisconnect.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
+            this.btnDisconnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDisconnect.Location = new System.Drawing.Point(90, 0);
+            this.btnDisconnect.Name = "btnDisconnect";
+            this.btnDisconnect.Size = new System.Drawing.Size(30, 30);
+            this.btnDisconnect.TabIndex = 11;
+            this.btnDisconnect.UseVisualStyleBackColor = true;
             // 
             // btnDeleteDB
             // 
@@ -309,14 +328,30 @@
             this.btnRefresh.TabIndex = 9;
             this.btnRefresh.UseVisualStyleBackColor = true;
             // 
-            // RowContextMenu
+            // GridRowContext
             // 
-            this.RowContextMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.RowContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GridRowContext.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.GridRowContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FindValueTSMItem,
+            this.FilterTSMItem,
             this.DeleteRowTSMItem});
-            this.RowContextMenu.Name = "RowContextMenu";
-            this.RowContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.RowContextMenu.Size = new System.Drawing.Size(159, 26);
+            this.GridRowContext.Name = "RowContextMenu";
+            this.GridRowContext.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.GridRowContext.Size = new System.Drawing.Size(159, 70);
+            // 
+            // FindValueTSMItem
+            // 
+            this.FindValueTSMItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.FindValueTSMItem.Name = "FindValueTSMItem";
+            this.FindValueTSMItem.Size = new System.Drawing.Size(158, 22);
+            this.FindValueTSMItem.Text = "Поиск значния";
+            // 
+            // FilterTSMItem
+            // 
+            this.FilterTSMItem.ForeColor = System.Drawing.Color.White;
+            this.FilterTSMItem.Name = "FilterTSMItem";
+            this.FilterTSMItem.Size = new System.Drawing.Size(158, 22);
+            this.FilterTSMItem.Text = "Фильтр";
             // 
             // DeleteRowTSMItem
             // 
@@ -331,7 +366,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.ClientSize = new System.Drawing.Size(875, 615);
+            this.ClientSize = new System.Drawing.Size(905, 637);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.MenuPanel);
             this.Controls.Add(this.TreeViewExplorer);
@@ -342,13 +377,13 @@
             this.Name = "MainForm";
             this.Text = "SQL Manager";
             ((System.ComponentModel.ISupportInitialize)(this.GridContent)).EndInit();
-            this.DBContextMenu.ResumeLayout(false);
-            this.TableContextMenu.ResumeLayout(false);
+            this.ExplorerDBContext.ResumeLayout(false);
+            this.ExplorerTableContext.ResumeLayout(false);
             this.MenuPanel.ResumeLayout(false);
             this.MenuPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
-            this.RowContextMenu.ResumeLayout(false);
+            this.GridRowContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -356,10 +391,10 @@
         #endregion
         private System.Windows.Forms.DataGridView GridContent;
         private System.Windows.Forms.TreeView TreeViewExplorer;
-        private System.Windows.Forms.ContextMenuStrip DBContextMenu;
+        private System.Windows.Forms.ContextMenuStrip ExplorerDBContext;
         private System.Windows.Forms.ToolStripMenuItem CreateTableTSMItem;
         private System.Windows.Forms.ToolStripMenuItem DeleteDBTSMItem;
-        private System.Windows.Forms.ContextMenuStrip TableContextMenu;
+        private System.Windows.Forms.ContextMenuStrip ExplorerTableContext;
         private System.Windows.Forms.ToolStripMenuItem DeleteTableTSMItem;
         private System.Windows.Forms.Panel MenuPanel;
         private System.Windows.Forms.Button btnClose;
@@ -370,10 +405,13 @@
         private System.Windows.Forms.Button btnDeleteDB;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ContextMenuStrip RowContextMenu;
+        private System.Windows.Forms.ContextMenuStrip GridRowContext;
         private System.Windows.Forms.ToolStripMenuItem DeleteRowTSMItem;
         private System.Windows.Forms.ToolStripMenuItem RenameDBTSMItem;
         private System.Windows.Forms.ToolStripMenuItem RenameTableTSMItem;
+        private System.Windows.Forms.ToolStripMenuItem FindValueTSMItem;
+        private System.Windows.Forms.ToolStripMenuItem FilterTSMItem;
+        private System.Windows.Forms.Button btnDisconnect;
     }
 }
 

@@ -13,18 +13,28 @@ namespace SQLTools
     {
         static SqlConnectionStringBuilder _connectionStr;
         static SqlDataAdapter _adapter = null;
+        static Dictionary<string, DataTable> cacheTables;
         static DataTable currentTable;
 
+        internal static void ConfigConnection(string dataSource, SqlAuthenticationMethod method, string login, string password)
+        {
+            _connectionStr = new SqlConnectionStringBuilder();
+            _connectionStr.Authentication = method;
+            _connectionStr.UserID = login;
+            _connectionStr.Password = password;
+            _connectionStr.DataSource = dataSource;
+        }
 
-        internal static List<string> GetListDB(string DataSource)
+        internal static void ConfigAdapter(out SqlDataAdapter adapter, string query)
+        {
+            adapter = new SqlDataAdapter(query, _connectionStr.ToString());
+            var builder = new SqlCommandBuilder(adapter);
+        }
+
+        internal static List<string> GetDBNames()
         {
             var dbNames = new List<string>();
-
-            _connectionStr = new SqlConnectionStringBuilder
-            {
-                DataSource = DataSource,
-                IntegratedSecurity = true
-            };
+            
 
             using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
             {
@@ -33,7 +43,7 @@ namespace SQLTools
                 connection.Open();
 
 
-                IDataReader reader = command.ExecuteReader();
+                IDataReader reader = command.ExecuteReader(); ;
 
                 while (reader.Read())
                 {
@@ -43,18 +53,13 @@ namespace SQLTools
             return dbNames;
         }
 
-        internal static List<string> GetListTables(string dbName)
+        internal static List<string> GetTableNames(string dbName)
         {
             var tableNames = new List<string>();
 
-            var DBconnection = new SqlConnectionStringBuilder
-            {
-                DataSource = _connectionStr.DataSource,
-                InitialCatalog = dbName,
-                IntegratedSecurity = true
-            };
+            _connectionStr.InitialCatalog = dbName;
 
-            using (SqlConnection connection = new SqlConnection(DBconnection.ToString()))
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
             {
                 IDbCommand command = new SqlCommand("Select name from sys.tables where type_desc = 'USER_TABLE'");
                 command.Connection = connection;
@@ -72,10 +77,12 @@ namespace SQLTools
         internal static string GetPKColumn(string dbName, string tableName)
         {
             string columnName = default;
-            var tableConnection = new SqlConnectionStringBuilder();
-            tableConnection.DataSource = _connectionStr.DataSource;
-            tableConnection.InitialCatalog = dbName;
-            tableConnection.IntegratedSecurity = true;
+            var tableConnection = new SqlConnectionStringBuilder
+            {
+                DataSource = _connectionStr.DataSource,
+                InitialCatalog = dbName,
+                IntegratedSecurity = true
+            };
 
             using (IDbConnection connection = new SqlConnection(tableConnection.ToString()))
             {
@@ -105,22 +112,24 @@ namespace SQLTools
             ConfigAdapter(out _adapter, query);
         }
 
-        internal static void ConfigAdapter(out SqlDataAdapter adapter, string query)
-        {
-            adapter = new SqlDataAdapter(query, _connectionStr.ToString());
-            var builder = new SqlCommandBuilder(adapter);
-        }
-
         internal static DataTable GetTable(string InitialCatalog, string tableName)
         {
             currentTable = new DataTable(tableName);
+            
             string query = $"Select * from {tableName}";
 
             CreateConnect(InitialCatalog, query);
 
+            if (cacheTables == null)
+            {
+                cacheTables = new Dictionary<string, DataTable>();
+            }
+
             try
             {
-                _adapter.Fill(currentTable);
+                if (!cacheTables.ContainsKey(tableName)) _adapter.Fill(currentTable);
+                else cacheTables.TryGetValue(tableName, out currentTable);
+                if (currentTable.Rows.Count > 50000 && !cacheTables.ContainsKey(tableName)) cacheTables.Add(tableName, currentTable);
             }
             catch (SqlException e)
             {
@@ -149,7 +158,7 @@ namespace SQLTools
 
         internal static bool CreateDB(string dbName)
         {
-            foreach (var db in GetListDB(_connectionStr.DataSource))
+            foreach (var db in GetDBNames())
             {
                 if (db == dbName)
                 {
@@ -175,6 +184,7 @@ namespace SQLTools
         {
             _connectionStr = default;
             CloseConnections();
+            ClearStaticData();
         }
 
         internal static bool CreateTable(string dbName, string tableName)
@@ -308,13 +318,13 @@ namespace SQLTools
             }
         }
 
-        internal static bool SearchRow(string columnName, string value, out int rowIndex)
+        internal static bool SearchRow(string columnName, string value, int selectRowId, out int rowIndex)
         {
             if (CheckType(value, currentTable.Columns[columnName].DataType))
             {
                 using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
                 {
-                    IDbCommand command = new SqlCommand($"Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from {currentTable.TableName} where {columnName} = '{value}')");
+                    IDbCommand command = new SqlCommand($"if ((Select Count(*) from {currentTable.TableName} where {columnName} = '{value}') = 1) Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from {currentTable.TableName} where {columnName} = '{value}'); else Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from (select top 1 * from (select * from {currentTable.TableName} where {columnName} = '{value}' and {currentTable.Columns[0].ColumnName} > {currentTable.Rows[selectRowId][0]}) as cutTable) as SelectTopElement)");
                     command.Connection = connection;
                     connection.Open();
                     IDataReader reader = command.ExecuteReader();
@@ -330,6 +340,25 @@ namespace SQLTools
                 return true;
             else
                 return false;
+        }
+
+        internal static void DataFilter(string filter)
+        {
+            if (!currentTable.Columns.Contains("_FilterRow"))
+            {
+                DataColumn ctRowString = currentTable.Columns.Add("_FilterRow", typeof(string));
+                foreach (DataRow dataRow in currentTable.Rows)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < currentTable.Columns.Count - 1; i++)
+                    {
+                        sb.Append(dataRow[i].ToString());
+                        sb.Append("\t");
+                    }
+                    dataRow[ctRowString] = sb.ToString();
+                }
+            }
+            currentTable.DefaultView.RowFilter = string.Format("[_FilterRow] LIKE '%{0}%'", filter);
         }
 
         internal static void CloseConnections()
@@ -389,26 +418,6 @@ namespace SQLTools
             return false;
         }
 
-        internal static bool CheckType(string value, Type type)
-        {
-            switch (type.Name)
-            {
-                case "String":
-                    return value as string != null;
-                case "Int32":
-                    return int.TryParse(value, out int ir);
-                case "Boolean":
-                    return bool.TryParse(value, out bool br);
-                case "TimeSpan":
-                    return TimeSpan.TryParse(value, out TimeSpan tsr);
-                case "DateTime":
-                    return DateTime.TryParse(value, out DateTime dtr);
-                case "Decimal":
-                    return decimal.TryParse(value, out decimal dr);
-            }
-            return false;
-        }
-
         internal static bool IsLockDB(string dbName)
         {
             CloseConnections();
@@ -428,6 +437,27 @@ namespace SQLTools
                 }
                 CloseConnection(connection);
                 return false;
+            }
+        }
+
+        private static bool CheckType(string value, Type type)
+        {
+            switch (type.Name)
+            {
+                case "String":
+                    return value as string != null;
+                case "Int32":
+                    return int.TryParse(value, out _);
+                case "Boolean":
+                    return bool.TryParse(value, out _);
+                case "TimeSpan":
+                    return TimeSpan.TryParse(value, out TimeSpan _);
+                case "DateTime":
+                    return DateTime.TryParse(value, out DateTime _);
+                case "Decimal":
+                    return decimal.TryParse(value, out decimal _);
+                default:
+                    return false;
             }
         }
 
