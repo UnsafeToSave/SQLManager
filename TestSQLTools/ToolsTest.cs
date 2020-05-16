@@ -19,17 +19,19 @@ namespace TestSQLTools
 
 
 
-        [Test]
+        [SetUp]
         public void Test_Connection()
         {
             dataComposer.Connection("(localdb)\\MSSQLLocalDB", System.Data.SqlClient.SqlAuthenticationMethod.NotSpecified);
         }
+
         [Test]
         public void Test_GetDBNames()
         {
-            TreeNode[] nodes = dataComposer.GetDBNames();
+            TreeNode[] nodes;
             List<string> dbNames = new List<string>();
-            List<string> tableNames = new List<string>();
+
+            nodes = dataComposer.GetDBNames();
             foreach (var db in nodes)
             {
                 dbNames.Add(db.Text);
@@ -57,7 +59,9 @@ namespace TestSQLTools
         public void Test_GetCreatorTable()
         {
 
-            DataTable testTable = dataComposer.GetCreatorTable();
+            DataTable testTable;
+
+            testTable = dataComposer.GetCreatorTable();
 
             Assert.AreEqual("Creator", testTable.TableName);
             Assert.AreEqual(3, testTable.Columns.Count);
@@ -69,39 +73,49 @@ namespace TestSQLTools
         [Test]
         public void Test_GetTable()
         {
-            DataTable tableTest = dataComposer.GetTable("aero", "AeroTest");
-            DataRow row1 = tableTest.NewRow();
-            DataRow row10 = tableTest.NewRow();
-            row1["Id"] = 1;
-            row1["Name"] = "Name1";
-            row10["Id"] = 10;
-            row10["Name"] = "Name10";
+            DataTable tableTest;
+            DataRow newRow1;
+            DataRow newRow5;
 
-            
+            tableTest = dataComposer.GetTable("aero", "AeroTest");
+            newRow1 = tableTest.NewRow();
+            newRow1["Id"] = 1;
+            newRow1["Name"] = "Name1";
+            newRow5 = tableTest.NewRow();
+            newRow5["Id"] = 5;
+            newRow5["Name"] = "Name5";
+
             Assert.AreEqual("AeroTest", tableTest.TableName);
             Assert.AreEqual(10, tableTest.Rows.Count);
             Assert.AreEqual(2, tableTest.Columns.Count);
-            Assert.AreEqual(row1.ItemArray, tableTest.Rows[0].ItemArray);
-            Assert.AreEqual(row10.ItemArray, tableTest.Rows[9].ItemArray);
+            Assert.AreEqual(newRow1.ItemArray, tableTest.Rows[0].ItemArray);
+            Assert.AreEqual(newRow5.ItemArray, tableTest.Rows[4].ItemArray);
         }
+
         [Test]
         public void Test_ChangeRow()
         {
-            Test_Connection();
+            DataTable tableTest;
+            DataTable newTable;
+            DataRow newRow;
 
-            DataTable tableTest = dataComposer.GetTable("aero", "AeroTest");
-            DataRow row = tableTest.NewRow();
-            row["Id"] = 11;
-            row["Name"] = "Name11";
-            tableTest.Rows.Add(row);
+            tableTest = dataComposer.GetTable("aero", "AeroTest");
+            newRow = tableTest.NewRow();
+            newRow["Id"] = 11;
+            newRow["Name"] = "Name11";
+            tableTest.Rows.Add(newRow);
             dataComposer.ChangeRow();
+            newTable = dataComposer.GetTable("aero", "AeroTest");
 
-            Assert.AreEqual(11, tableTest.Rows.Count);
+            Assert.AreEqual(11, newTable.Rows.Count);
         }
+
         [Test]
         public void Test_DeleteRow()
         {
-            DataTable tableTest = dataComposer.GetTable("aero", "AeroTest");
+            DataTable tableTest;
+
+            tableTest = dataComposer.GetTable("aero", "AeroTest");
             dataComposer.DeleteRow(10);
 
             Assert.AreNotEqual(tableTest, dataComposer.GetTable("aero", "AeroTest"));
