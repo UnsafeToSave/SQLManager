@@ -13,7 +13,6 @@ namespace SQLTools
     {
         static SqlConnectionStringBuilder _connectionStr;
         static SqlDataAdapter _adapter = null;
-        static Dictionary<string, DataTable> cacheTables;
         static DataTable currentTable;
 
         internal static void ConfigConnection(string dataSource, SqlAuthenticationMethod method, string login, string password)
@@ -114,16 +113,10 @@ namespace SQLTools
 
             CreateConnect(InitialCatalog, query);
 
-            if (cacheTables == null)
-            {
-                cacheTables = new Dictionary<string, DataTable>();
-            }
 
             try
             {
-                if (!cacheTables.ContainsKey(tableName)) _adapter.Fill(currentTable);
-                else cacheTables.TryGetValue(tableName, out currentTable);
-                if (currentTable.Rows.Count > 50000 && !cacheTables.ContainsKey(tableName)) cacheTables.Add(tableName, currentTable);
+                _adapter.Fill(currentTable);
             }
             catch (SqlException e)
             {

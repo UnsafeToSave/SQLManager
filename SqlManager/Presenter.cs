@@ -54,16 +54,16 @@ namespace SqlManager
                 _message.ShowMessage("Значение не найдено.");
         }
 
-        private void TableRenamed(object sender, EventArgs e)
+        private async void TableRenamed(object sender, EventArgs e)
         {
             if (_message.ShowWarningMessage($"Переименовать таблицу {_view.CurrentTable}"))
             {
                 _dataComposer.RenameTable(_view.CurrentDB, _view.CurrentTable, _view.TableName);
-                _view.Explorer = _dataComposer.GetDBNames();
+                _view.Explorer = await _dataComposer.GetDBNames();
             }
         }
 
-        private void DBRenamed(object sender, EventArgs e)
+        private async void DBRenamed(object sender, EventArgs e)
         {
             if(_message.ShowWarningMessage($"Переименовать базу {_view.CurrentDB}"))
             {
@@ -72,41 +72,41 @@ namespace SqlManager
                 else 
                     _message.ShowMessage($"База с именем {_view.DBName} уже существует");
 
-                _view.Explorer = _dataComposer.GetDBNames();
+                _view.Explorer = await _dataComposer.GetDBNames();
             }
         }
 
-        private void TableDeleted(object sender, EventArgs e)
+        private async void TableDeleted(object sender, EventArgs e)
         {
             if (_message.ShowWarningMessage("Вы действительно хотите удалить таблицу."))
             {
                 _dataComposer.DeleteTable(_view.CurrentDB, _view.CurrentTable);
                 _message.ShowMessage("Таблица удалена.");
-                _view.Explorer = _dataComposer.GetDBNames();
+                _view.Explorer = await _dataComposer.GetDBNames();
             }
         }
 
-        private void DBDeleted(object sender, EventArgs e)
+        private async void DBDeleted(object sender, EventArgs e)
         {
             if (!_dataComposer.IsLockDB(_view.CurrentDB))
             {
                 if (_message.ShowWarningMessage("Вы действительно хотите удалить базу данных."))
                 {
                     _dataComposer.DeleteDB(_view.CurrentDB);
-                    _view.Explorer = _dataComposer.GetDBNames();
+                    _view.Explorer = await _dataComposer.GetDBNames();
                 }
             }
             else
                 _message.ShowMessage("База данных используется.");
         }
 
-        private void TableCreated(object sender, EventArgs e)
+        private async void TableCreated(object sender, EventArgs e)
         {
             if (_view.TableName != "")
             {
                 if(_dataComposer.CreateTable(_view.CurrentDB, _view.TableName))
                 {
-                    _view.Explorer = _dataComposer.GetDBNames();
+                    _view.Explorer = await _dataComposer.GetDBNames();
                     _message.ShowMessage("Таблица успешно создана.");
                 }
                 else
@@ -129,9 +129,9 @@ namespace SqlManager
             _dataComposer.Disconnected();
         }
 
-        private void Refreshed(object sender, EventArgs e)
+        private async void Refreshed(object sender, EventArgs e)
         {
-            _view.Explorer = _dataComposer.GetDBNames();
+            _view.Explorer = await _dataComposer.GetDBNames();
         }
 
         private void DBCreated(object sender, EventArgs e)
@@ -183,10 +183,10 @@ namespace SqlManager
                 _message.ShowMessage("Действие отменено.");
         }
 
-        private void TableSelect(object sender, EventArgs e)
+        private async void TableSelect(object sender, EventArgs e)
         {
             if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable))
-                _view.Content =  _dataComposer.GetTable(_view.CurrentDB, _view.CurrentTable);
+                _view.Content =  await _dataComposer.GetTable(_view.CurrentDB, _view.CurrentTable);
             else
             {
                 _message.ShowErrorMessage("Таблица не найдена.");
@@ -194,7 +194,7 @@ namespace SqlManager
             }
         }
 
-        private void Connection(object sender, EventArgs e)
+        private async void Connection(object sender, EventArgs e)
         {
             if (_view.ServerName == "")
             {
@@ -202,7 +202,7 @@ namespace SqlManager
                 return;
             }
             _dataComposer.Connection(_view.ServerName, _view.Authentication, _view.Login, _view.Password);
-            _view.Explorer = _dataComposer.GetDBNames();
+            _view.Explorer = await _dataComposer.GetDBNames();
         }
 
         private void ApplicationClose(object sender, EventArgs e)

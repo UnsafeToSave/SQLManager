@@ -14,9 +14,9 @@ namespace SQLTools
     public interface IDataComposer
     {
         void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "");
-        TreeNode[] GetDBNames();
+        Task<TreeNode[]> GetDBNames();
         bool TryGetTable(string dbName, string tableName);
-        DataTable GetTable(string InitialCatalog, string tableName);
+        Task<DataTable> GetTable(string InitialCatalog, string tableName);
         void DeleteRow(int index);
         void ChangeRow();
         bool CreateDB(string dbName);
@@ -48,15 +48,15 @@ namespace SQLTools
             Tools.ConfigConnection(dataSource, method, login, password);
         }
 
-        public TreeNode[] GetDBNames()
+        public async Task<TreeNode[]> GetDBNames()
         {
-            var db = Tools.GetDBNames();
+            var db = await Task.Run(()=> Tools.GetDBNames());
             var tree = new TreeNode[db.Count];
 
             
             for (int i = 0; i < tree.Length; i++)
             {
-                tree[i] = new TreeNode(db[i], 0, 1, GetTableNames(db[i]))
+                tree[i] = new TreeNode(db[i], 0, 1, await Task.Run(()=>GetTableNames(db[i])))
                 {
                     Tag = "DB"
                 };
@@ -95,9 +95,9 @@ namespace SQLTools
             return false;
         }
 
-        public  DataTable GetTable(string InitialCatalog, string tableName)
+        public async Task<DataTable> GetTable(string InitialCatalog, string tableName)
         {
-            return Tools.GetTable(InitialCatalog, tableName);
+            return await Task.Run(() => Tools.GetTable(InitialCatalog, tableName));
         }
 
         public void DeleteRow(int index)
