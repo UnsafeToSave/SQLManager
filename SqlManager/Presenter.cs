@@ -13,14 +13,14 @@ namespace SqlManager
     class Presenter
     {
         private readonly IMainForm _view;
-        private readonly IDataComposer _dataComposer;
+        private readonly ITools _tools;
         private readonly IMessageService _message;
 
 
-        public Presenter(IMainForm view, IDataComposer dataComposer, IMessageService message)
+        public Presenter(IMainForm view, ITools tools, IMessageService message)
         {
             _view = view;
-            _dataComposer = dataComposer;
+            _tools = tools;
             _message = message;
 
             _view.ApplicationClose += ApplicationClose;
@@ -43,12 +43,12 @@ namespace SqlManager
 
         private void DataFiltered(object sender, EventArgs e)
         {
-            _dataComposer.DataFilter(_view.Filter);
+            _tools.DataFilter(_view.Filter);
         }
 
         private void RowSearched(object sender, EventArgs e)
         {
-            if(_dataComposer.SearchRow(_view.SearchColumn, _view.SearchValue, _view.SelectedRowIndex, out int index))
+            if(_tools.SearchRow(_view.SearchColumn, _view.SearchValue, _view.SelectedRowIndex, out int index))
                 _view.SelectedRowIndex = index;
             else
                 _message.ShowMessage("Значение не найдено.");
@@ -58,8 +58,8 @@ namespace SqlManager
         {
             if (_message.ShowWarningMessage($"Переименовать таблицу {_view.CurrentTable}"))
             {
-                _dataComposer.RenameTable(_view.CurrentDB, _view.CurrentTable, _view.TableName);
-                _view.Explorer = await _dataComposer.GetDBNames();
+                _tools.RenameTable(_view.CurrentDB, _view.CurrentTable, _view.TableName);
+                _view.Explorer = await _tools.GetDBNames();
             }
         }
 
@@ -67,12 +67,12 @@ namespace SqlManager
         {
             if(_message.ShowWarningMessage($"Переименовать базу {_view.CurrentDB}"))
             {
-                if (!_dataComposer.IsExist(_view.DBName)) 
-                    _dataComposer.RenameDB(_view.CurrentDB, _view.DBName);
+                if (!_tools.IsExist(_view.DBName)) 
+                    _tools.RenameDB(_view.CurrentDB, _view.DBName);
                 else 
                     _message.ShowMessage($"База с именем {_view.DBName} уже существует");
 
-                _view.Explorer = await _dataComposer.GetDBNames();
+                _view.Explorer = await _tools.GetDBNames();
             }
         }
 
@@ -80,20 +80,20 @@ namespace SqlManager
         {
             if (_message.ShowWarningMessage("Вы действительно хотите удалить таблицу."))
             {
-                _dataComposer.DeleteTable(_view.CurrentDB, _view.CurrentTable);
+                _tools.DeleteTable(_view.CurrentDB, _view.CurrentTable);
                 _message.ShowMessage("Таблица удалена.");
-                _view.Explorer = await _dataComposer.GetDBNames();
+                _view.Explorer = await _tools.GetDBNames();
             }
         }
 
         private async void DBDeleted(object sender, EventArgs e)
         {
-            if (!_dataComposer.IsLockDB(_view.CurrentDB))
+            if (!_tools.IsLockDB(_view.CurrentDB))
             {
                 if (_message.ShowWarningMessage("Вы действительно хотите удалить базу данных."))
                 {
-                    _dataComposer.DeleteDB(_view.CurrentDB);
-                    _view.Explorer = await _dataComposer.GetDBNames();
+                    _tools.DeleteDB(_view.CurrentDB);
+                    _view.Explorer = await _tools.GetDBNames();
                 }
             }
             else
@@ -104,9 +104,9 @@ namespace SqlManager
         {
             if (_view.TableName != "")
             {
-                if(_dataComposer.CreateTable(_view.CurrentDB, _view.TableName))
+                if(_tools.CreateTable(_view.CurrentDB, _view.TableName))
                 {
-                    _view.Explorer = await _dataComposer.GetDBNames();
+                    _view.Explorer = await _tools.GetDBNames();
                     _message.ShowMessage("Таблица успешно создана.");
                 }
                 else
@@ -121,24 +121,24 @@ namespace SqlManager
 
         private void TableCreate(object sender, EventArgs e)
         {
-            _view.Content = _dataComposer.GetCreatorTable();
+            _view.Content = _tools.GetCreatorTable();
         }
 
         private void Disconnected(object sender, EventArgs e)
         {
-            _dataComposer.Disconnected();
+            _tools.Disconnected();
         }
 
         private async void Refreshed(object sender, EventArgs e)
         {
-            _view.Explorer = await _dataComposer.GetDBNames();
+            _view.Explorer = await _tools.GetDBNames();
         }
 
         private void DBCreated(object sender, EventArgs e)
         {
             if (_view.DBName != "")
             {
-                if (_dataComposer.CreateDB(_view.DBName))
+                if (_tools.CreateDB(_view.DBName))
                 {
                     _message.ShowMessage("База данных успешно создана.");
                 }
@@ -154,17 +154,17 @@ namespace SqlManager
         {
             if (_message.ShowWarningMessage($"Изменить строку."))
             {
-                if (_dataComposer.IsExist(_view.FullPath))
+                if (_tools.IsExist(_view.FullPath))
                 {
-                    _dataComposer.ChangeRow();
+                    _tools.ChangeRow();
                 }
                 else
                     _message.ShowMessage("Таблицы не существует.");
             }
             else
             {
-                if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable))
-                    _view.Content = await Task.Run(() => _dataComposer.GetTable(_view.CurrentDB, _view.CurrentTable));
+                if (_tools.TryGetTable(_view.CurrentDB, _view.CurrentTable))
+                    _view.Content = await Task.Run(() => _tools.GetTable(_view.CurrentDB, _view.CurrentTable));
                 else
                     Connection(this, EventArgs.Empty);
                 _message.ShowMessage("Действие отменено.");
@@ -176,7 +176,7 @@ namespace SqlManager
         {
             if (_message.ShowWarningMessage($"Вы действительно хотите удалить запись с Id {_view.CurrentRow.Rows[0][0].ToString()}! "))
             {
-                _dataComposer.DeleteRow(_view.SelectedRowIndex);
+                _tools.DeleteRow(_view.SelectedRowIndex);
                 _message.ShowMessage("Запись удалена.");
             }
             else
@@ -185,8 +185,8 @@ namespace SqlManager
 
         private async void TableSelect(object sender, EventArgs e)
         {
-            if (_dataComposer.TryGetTable(_view.CurrentDB, _view.CurrentTable))
-                _view.Content =  await _dataComposer.GetTable(_view.CurrentDB, _view.CurrentTable);
+            if (_tools.TryGetTable(_view.CurrentDB, _view.CurrentTable))
+                _view.Content =  await _tools.GetTable(_view.CurrentDB, _view.CurrentTable);
             else
             {
                 _message.ShowErrorMessage("Таблица не найдена.");
@@ -201,13 +201,13 @@ namespace SqlManager
                 _message.ShowErrorMessage("Ошибка имени сeрвера");
                 return;
             }
-            _dataComposer.Connection(_view.ServerName, _view.Authentication, _view.Login, _view.Password);
-            _view.Explorer = await _dataComposer.GetDBNames();
+            _tools.Connection(_view.ServerName, _view.Authentication, _view.Login, _view.Password);
+            _view.Explorer = await _tools.GetDBNames();
         }
 
         private void ApplicationClose(object sender, EventArgs e)
         {
-            _dataComposer.CloseApp();
+            _tools.CloseApp();
         }
 
     }

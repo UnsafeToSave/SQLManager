@@ -712,6 +712,7 @@ namespace SqlManager
             this.Visible = false;
             Disconnected?.Invoke(this, EventArgs.Empty);
             ClearGrid();
+            TreeViewExplorer.Nodes.Clear();
             connectionForm.ShowDialog(this);
         }
 

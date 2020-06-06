@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace SQLTools
 {
-    public interface IDataComposer
+    public interface ITools
     {
         void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "");
         Task<TreeNode[]> GetDBNames();
@@ -34,23 +34,23 @@ namespace SQLTools
         void CloseApp();
     }
 
-    public class DataComposer : IDataComposer
+    public class SqlTools : ITools
     {
 
         public void  CloseApp()
         {
-            Tools.CloseConnections();
+            ConfigConnection.CloseConnections();
         }
 
 
         public void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "")
         {
-            Tools.ConfigConnection(dataSource, method, login, password);
+            ConfigConnection.CreateConnectionString(dataSource, method, login, password);
         }
 
         public async Task<TreeNode[]> GetDBNames()
         {
-            var db = await Task.Run(()=> Tools.GetDBNames());
+            var db = await Task.Run(()=> GetListNames.GetDBNames());
             var tree = new TreeNode[db.Count];
 
             
@@ -71,7 +71,7 @@ namespace SQLTools
 
         private TreeNode[] GetTableNames(string dbName)
         {
-            var tables = Tools.GetTableNames(dbName);
+            var tables = GetListNames.GetTableNames(dbName);
 
             var treeChild = new TreeNode[tables.Count];
 
@@ -88,7 +88,7 @@ namespace SQLTools
         public bool TryGetTable(string dbName, string tableName)
         {
             var fullPath = dbName + "\\" + tableName;
-            if (Tools.IsExist(fullPath))
+            if (Validation.IsExist(fullPath))
             {
                 return true;
             }
@@ -97,77 +97,77 @@ namespace SQLTools
 
         public async Task<DataTable> GetTable(string InitialCatalog, string tableName)
         {
-            return await Task.Run(() => Tools.GetTable(InitialCatalog, tableName));
+            return await Task.Run(() => TableTools.GetTable(InitialCatalog, tableName));
         }
 
         public void DeleteRow(int index)
         {
-            Tools.DeleteRow(index);
+            TableTools.DeleteRow(index);
         }
          
         public void ChangeRow()
         {
-            Tools.ChangeRow();
+            TableTools.ChangeRow();
         }
 
         public bool CreateDB(string dbName)
         {
-            return Tools.CreateDB(dbName);
+            return CreateObject.CreateDB(dbName);
         }
 
         public void Disconnected()
         {
-            Tools.Disconnect();
+            ConfigConnection.Disconnect();
         }
 
         public bool CreateTable(string dbName, string tableName)
         {
-            return Tools.CreateTable(dbName, tableName);
+            return CreateObject.CreateTable(dbName, tableName);
         }
 
         public DataTable GetCreatorTable()
         {
-            return Tools.GetCreatorTable();
+            return CreateObject.GetCreatorTable();
         }
 
         public void DeleteDB(string dbName)
         {
-            Tools.DeleteDB(dbName);
+            DeleteObject.DeleteDB(dbName);
         }
 
         public void DeleteTable(string dbName, string tableName)
         {
-            Tools.DeleteTable(dbName, tableName);
+            DeleteObject.DeleteTable(dbName, tableName);
         }
 
         public void RenameDB(string selectDB, string newName)
         {
-            Tools.RenameDB(selectDB, newName);
+            NameChanger.RenameDB(selectDB, newName);
         }
 
         public void RenameTable(string dbName, string tableName, string newName)
         {
-            Tools.RenameTable(dbName, tableName, newName);
+            NameChanger.RenameTable(dbName, tableName, newName);
         }
 
         public bool SearchRow(string columnName, string value, int selectRowId, out int index)
         {
-            return Tools.SearchRow(columnName, value, selectRowId, out  index);
+            return TableTools.SearchRow(columnName, value, selectRowId, out  index);
         }
 
         public bool IsLockDB(string dbName)
         {
-            return Tools.IsLockDB(dbName);
+            return Validation.IsLockDB(dbName);
         }
 
         public bool IsExist(string fullPath)
         {
-            return Tools.IsExist(fullPath);
+            return Validation.IsExist(fullPath);
         }
 
         public void DataFilter (string filter)
         {
-           Tools.DataFilter(filter);
+           TableTools.DataFilter(filter);
         }
     }
 }

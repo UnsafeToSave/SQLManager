@@ -19,7 +19,7 @@ namespace SqlManager
             Application.SetCompatibleTextRenderingDefault(false);
 
             MainForm mainForm = new MainForm();
-            DataComposer dataComposer = new DataComposer();
+            SqlTools dataComposer = new SqlTools();
             MessageService message = new MessageService();
 
             new Presenter(mainForm, dataComposer, message);

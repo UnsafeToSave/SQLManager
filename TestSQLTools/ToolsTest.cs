@@ -15,7 +15,7 @@ namespace TestSQLTools
     public class ToolsTest
     {
 
-        DataComposer dataComposer = new DataComposer();
+        SQLTools.SQLTools dataComposer = new SQLTools.SQLTools();
 
 
 
