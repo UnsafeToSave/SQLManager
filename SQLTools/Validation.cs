@@ -12,6 +12,8 @@ namespace SQLTools
     {
         static SqlConnectionStringBuilder _connectionStr = ConfigConnection.GetConnectionBuilder();
 
+        static int _maxRows;
+
         internal static bool IsExist(string fullPath)
         {
 
@@ -84,6 +86,16 @@ namespace SQLTools
                 CloseConnection(connection);
                 return false;
             }
+        }
+
+        internal async static Task<bool> IsFullTable(string InitialCatalog, string tableName)
+        {
+            _maxRows = await Task.Run(() => TableTools.GetCountRows(InitialCatalog, tableName));
+            if(TableTools.CurrentRowsCount >= _maxRows)
+            {
+                return true;
+            }
+            return false;
         }
 
         internal static bool CheckType(string value, Type type)

@@ -16,7 +16,8 @@ namespace SQLTools
         void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "");
         Task<TreeNode[]> GetDBNames();
         bool TryGetTable(string dbName, string tableName);
-        Task<DataTable> GetTable(string InitialCatalog, string tableName);
+        Task<DataTable> GetNewTable(string InitialCatalog, string tableName);
+        Task<DataTable> FillingTable(string IntitialCatalog);
         void DeleteRow(int index);
         void ChangeRow();
         bool CreateDB(string dbName);
@@ -31,6 +32,7 @@ namespace SQLTools
         void DataFilter(string filter);
         bool IsLockDB(string dbName);
         bool IsExist(string fullPath);
+        Task<bool> IsFullTable(string InitialCatalog, string tableName);
         void CloseApp();
     }
 
@@ -95,9 +97,14 @@ namespace SQLTools
             return false;
         }
 
-        public async Task<DataTable> GetTable(string InitialCatalog, string tableName)
+        public async Task<DataTable> GetNewTable(string InitialCatalog, string tableName)
         {
-            return await Task.Run(() => TableTools.GetTable(InitialCatalog, tableName));
+           return await Task.Run(() => TableTools.GetNewTable(InitialCatalog, tableName));
+        }
+
+        public async Task<DataTable> FillingTable(string InitialCatalog)
+        {
+            return await Task.Run(() => TableTools.FillingTable(InitialCatalog));
         }
 
         public void DeleteRow(int index)
@@ -163,6 +170,11 @@ namespace SQLTools
         public bool IsExist(string fullPath)
         {
             return Validation.IsExist(fullPath);
+        }
+
+        public async Task<bool> IsFullTable(string InitialCatalog, string tableName)
+        {
+            return await Validation.IsFullTable(InitialCatalog, tableName);
         }
 
         public void DataFilter (string filter)

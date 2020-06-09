@@ -29,11 +29,6 @@ namespace SQLTools
             adapter = new SqlDataAdapter(query, _connectionStr.ToString());
             var builder = new SqlCommandBuilder(adapter);
         }
-
-        internal static void DeleteAdapter()
-        {
-            _adapter = null;
-        }
         
     }
 }

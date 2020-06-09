@@ -14,19 +14,26 @@ namespace SQLTools
         static SqlConnectionStringBuilder _connectionStr = ConfigConnection.GetConnectionBuilder();
         static SqlDataAdapter _adapter = null;
         static DataTable currentTable;
+        private static int fillingStep = 20000;
 
-        internal static DataTable GetTable(string InitialCatalog, string tableName)
+        internal static int CurrentRowsCount {
+            get
+            {
+                return currentTable.Rows.Count;
+            }
+        }
+
+        internal static DataTable GetNewTable(string InitialCatalog, string tableName, int startRows = 0, int maxRows = 1000)
         {
             currentTable = new DataTable(tableName);
 
             string query = $"Select * from {tableName}";
 
             _adapter = DataAdapter.GetAdapter(InitialCatalog, query);
-            
 
             try
             { 
-                _adapter.Fill(currentTable);
+                _adapter.Fill(0, maxRows, currentTable);
             }
             catch (SqlException e)
             {
@@ -39,6 +46,53 @@ namespace SQLTools
 
             return currentTable;
         }
+
+        internal static DataTable FillingTable(string InitialCatalog)
+        {
+            int rowsCount = CurrentRowsCount;
+            var newTable = new DataTable(currentTable.TableName);
+            string query = $"Select * from {currentTable.TableName}";
+
+            _adapter = DataAdapter.GetAdapter(InitialCatalog, query);
+            try
+            {
+                _adapter.Fill(0, (rowsCount + fillingStep), newTable);
+            }
+            catch (SqlException e)
+            {
+                throw new Exception(e.Message);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Неизвестная ошибка", e);
+            }
+            currentTable = newTable;
+            return newTable;
+        }
+
+        internal static int GetCountRows(string InitialCatalog, string tableName)
+        {
+            int rowsCount = 0;
+
+            string query = $"Select Count(*) from {tableName}";
+
+            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
+            {
+                IDbCommand command = new SqlCommand(query);
+                command.Connection = connection;
+                connection.Open();
+
+                IDataReader reader = command.ExecuteReader();
+                reader.Read();
+
+                rowsCount = reader.GetInt32(0);
+
+
+                CloseConnection(connection);
+            }
+
+            return rowsCount;
+        } 
 
         internal static void DeleteRow(int index)
         {

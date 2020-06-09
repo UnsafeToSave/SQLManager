@@ -32,7 +32,6 @@ namespace SQLTools
         internal static void Disconnect()
         {
             _connectionStr = default;
-            DataAdapter.DeleteAdapter();
             TableTools.ClearCurrentTable();
         }
 

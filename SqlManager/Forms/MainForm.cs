@@ -57,6 +57,7 @@ namespace SqlManager
         event EventHandler TableRenamed;
         event EventHandler RowSearched;
         event EventHandler DataFiltered;
+        event EventHandler UploadRows;
 
     }
     
@@ -69,7 +70,10 @@ namespace SqlManager
         FilterForm filterForm;
 
         ImageList interfaceImages;
+
+        int scrollPointer;
         bool dataChanged = false;
+        bool rowsIsAdd = false;
         string currentDB { get; set; }
         Mode ContentMode { get; set; }
 
@@ -195,6 +199,7 @@ namespace SqlManager
                 return GridContent.SelectedRows[0].Index;
             }
         }
+        
         public TreeNode[] Explorer
         {
             set
@@ -213,15 +218,19 @@ namespace SqlManager
         {
             set
             {
-                GridContent.DataSource = value;
+                
                 if (value is DataTable)
-                    GridContent.Name = value.TableName;
-
-                if (GridContent.Columns.Contains("_FilterRow"))
                 {
-                    
+                    GridContent.DataSource = value;
+                    GridContent.Update();
+                    if (GridContent.Name == value.TableName)
+                    {
+                        GridContent.FirstDisplayedScrollingRowIndex = scrollPointer;
+                        rowsIsAdd = false;
+                    }
+                    GridContent.Name = value.TableName;
                 }
-                GridContent.Update();
+                
             }
         }
         public DataTable CurrentRow
@@ -279,6 +288,7 @@ namespace SqlManager
         public event EventHandler TableRenamed;
         public event EventHandler RowSearched;
         public event EventHandler DataFiltered;
+        public event EventHandler UploadRows;
         #endregion
 
         #region Меню
@@ -461,14 +471,14 @@ namespace SqlManager
 
 
             TreeViewExplorer.AfterSelect += TreeViewExplorer_AfterSelect;
-            GridContent.KeyDown += GridContent_HotKeyDown;
+            GridContent.KeyDown += Table_HotKeyDown;
             btnAddDB.Click += ShowDBForm;
             btnRefresh.Click += Refresh;
             btnDeleteDB.Click += DeleteDB;
             btnDisconnect.Click += Disconnection;
-            GridContent.SelectionChanged += GridContent_SelectionChanged;
-            GridContent.DataError += GridContent_DataError;
-            GridContent.CellValueChanged += GridContent_CellValueChanged;
+            GridContent.SelectionChanged += Table_SelectionChanged;
+            GridContent.DataError += Table_DataError;
+            GridContent.CellValueChanged += Table_CellValueChanged;
             TreeViewExplorer.MouseClick += TreeViewExplorer_MouseClick;
             CreateTableTSMItem.Click += CreateTable;
             DeleteDBTSMItem.Click += DeleteDB;
@@ -478,8 +488,11 @@ namespace SqlManager
             DeleteRowTSMItem.Click += DeleteRow;
             FindValueTSMItem.Click += ShowSearchForm;
             FilterTSMItem.Click += ShowFilterForm;
-            GridContent.MouseClick += ShowGridContextMenu;
+            GridContent.MouseClick += ShowTableContextMenu;
+            GridContent.Scroll += TableScroll;
         }
+
+        
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -528,6 +541,10 @@ namespace SqlManager
             if (TreeViewExplorer.SelectedNode.Level > 0)
             {
                 currentDB = TreeViewExplorer.SelectedNode.FullPath.Split('\\')[0];
+                if(GridContent.DataSource != null)
+                {
+                    ClearTable();
+                }
                 TableSelected?.Invoke(this, EventArgs.Empty);
             }
             else
@@ -575,7 +592,7 @@ namespace SqlManager
             Refreshed?.Invoke(this, EventArgs.Empty);
         }
 
-        private void GridContent_HotKeyDown(object sender, KeyEventArgs e)
+        private void Table_HotKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyValue == (char)Keys.F)
             {
@@ -593,7 +610,7 @@ namespace SqlManager
                 }
             }
         }
-        private void GridContent_SelectionChanged(object sender, EventArgs e)
+        private void Table_SelectionChanged(object sender, EventArgs e)
         {
             //Сохраняет измененную строку
             if (GridContent.Rows.Count > 1 && dataChanged && ContentMode == Mode.Viewer)
@@ -602,26 +619,39 @@ namespace SqlManager
                 RowChanged?.Invoke(this, EventArgs.Empty);
             }
         }
-        private void GridContent_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void Table_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (ContentMode == Mode.Viewer)
                 dataChanged = true;
         }
-        private void GridContent_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        private void TableScroll(object sender, ScrollEventArgs e)
+        {
+            int countRows = GridContent.Rows.Count;
+            int allCellHeight = GridContent.Rows.GetRowsHeight(DataGridViewElementStates.None);
+            int oneCellHeight = allCellHeight / countRows;
+            int currentRows = GridContent.VerticalScrollingOffset / oneCellHeight;
+            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows - currentRows <= 100 && !rowsIsAdd)
+            {
+                UploadRows?.Invoke(this, EventArgs.Empty);
+                scrollPointer = currentRows;
+                rowsIsAdd = true;
+            }
+        }
+        private void Table_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             MessageBox.Show(e.Exception.Message +
                             $"\r\n Ошибка в строке: {e.RowIndex}, " +
                             $"\r\n Ошибка в столбце: {e.ColumnIndex}, " +
                             $"\r\n Значение ячейки: {GridContent.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}");
         }
-        private void ShowGridContextMenu(object sender, MouseEventArgs e)
+        private void ShowTableContextMenu(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
                 GridRowContext.Show(GridContent, e.Location);
             }
         }
-        private void ClearGrid()
+        private void ClearTable()
         {
             GridContent.DataSource = null;
         }
@@ -632,7 +662,7 @@ namespace SqlManager
             TableCreated?.Invoke(this, EventArgs.Empty);
             tableForm.btnActionTable.Click -= CreateNewTable;
             ContentMode = Mode.Viewer;
-            ClearGrid();
+            ClearTable();
         }
         private void CreateTable(object sender, EventArgs e)
         {
@@ -710,9 +740,9 @@ namespace SqlManager
         private void Disconnection(object sender, EventArgs e)
         {
             this.Visible = false;
-            Disconnected?.Invoke(this, EventArgs.Empty);
-            ClearGrid();
+            ClearTable();
             TreeViewExplorer.Nodes.Clear();
+            Disconnected?.Invoke(this, EventArgs.Empty);
             connectionForm.ShowDialog(this);
         }
 

@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SQLTools;
@@ -39,6 +40,15 @@ namespace SqlManager
             _view.TableRenamed += TableRenamed;
             _view.RowSearched += RowSearched;
             _view.DataFiltered += DataFiltered;
+            _view.UploadRows += _view_UploadRows;
+        }
+
+        private async void _view_UploadRows(object sender, EventArgs e)
+        {
+            if(!await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable))
+            {
+                _view.Content = await  _tools.FillingTable(_view.CurrentDB);
+            }
         }
 
         private void DataFiltered(object sender, EventArgs e)
@@ -164,9 +174,9 @@ namespace SqlManager
             else
             {
                 if (_tools.TryGetTable(_view.CurrentDB, _view.CurrentTable))
-                    _view.Content = await Task.Run(() => _tools.GetTable(_view.CurrentDB, _view.CurrentTable));
+                    _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable);
                 else
-                    Connection(this, EventArgs.Empty);
+                    _view.Explorer = await _tools.GetDBNames();
                 _message.ShowMessage("Действие отменено.");
             }
                 
@@ -186,7 +196,9 @@ namespace SqlManager
         private async void TableSelect(object sender, EventArgs e)
         {
             if (_tools.TryGetTable(_view.CurrentDB, _view.CurrentTable))
-                _view.Content =  await _tools.GetTable(_view.CurrentDB, _view.CurrentTable);
+            {
+                _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable);
+            }
             else
             {
                 _message.ShowErrorMessage("Таблица не найдена.");

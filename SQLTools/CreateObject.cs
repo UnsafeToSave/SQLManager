@@ -110,7 +110,6 @@ namespace SQLTools
             }
 
             creatorTable = table;
-
             return table;
         }
 
@@ -126,7 +125,6 @@ namespace SQLTools
 
         private static void ClearStaticData()
         {
-            DataAdapter.DeleteAdapter();
             TableTools.ClearCurrentTable();
         }
     }
