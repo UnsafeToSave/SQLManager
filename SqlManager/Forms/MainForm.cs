@@ -666,27 +666,22 @@ namespace SqlManager
             TableCreated?.Invoke(this, EventArgs.Empty);
             tableForm.btnActionTable.Click -= CreateNewTable;
             ContentMode = Mode.Viewer;
+            GridContent.ColumnWidthChanged -= GridContent_ColumnWidthChanged;
             GridContent.CellBeginEdit -= GridContent_CellBeginEdit;
-            GridContent.CellEndEdit -= GridContent_CellEndEdit;
             ClearTable();
         }
+
+        
+
         private void CreateTable(object sender, EventArgs e)
         {
             TableCreate?.Invoke(this, EventArgs.Empty);
             ContentMode = Mode.Creator;
             GridContent.CellBeginEdit += GridContent_CellBeginEdit;
-            GridContent.CellEndEdit += GridContent_CellEndEdit;
+            GridContent.ColumnWidthChanged += GridContent_ColumnWidthChanged;
             CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
         }
 
-        private void GridContent_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            if(GridContent.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() != "")
-            {
-                this.Controls.Remove(TypeBox);
-            }
-            
-        }
 
         private void GridContent_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
@@ -711,6 +706,14 @@ namespace SqlManager
                 {
                     this.Controls.Remove(TypeBox);
                 }
+            }
+        }
+
+        private void GridContent_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+            if(GridContent.Name == "Creator")
+            {
+                this.Controls.Remove(TypeBox);
             }
         }
 
