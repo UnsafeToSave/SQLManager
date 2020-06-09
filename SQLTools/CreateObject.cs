@@ -27,7 +27,7 @@ namespace SQLTools
 
             using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
             {
-                IDbCommand command = new SqlCommand($"Create DataBase {dbName}");
+                IDbCommand command = new SqlCommand($"Create DataBase [{dbName}]");
                 command.Connection = connection;
                 connection.Open();
                 command.ExecuteNonQuery();
@@ -44,7 +44,7 @@ namespace SQLTools
             _connectionStr.InitialCatalog = dbName;
             using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
             {
-                string query = $"Create table {tableName}(";
+                string query = $"Create table [{tableName}](";
                 for (int i = 0; i < creatorTable.Rows.Count; i++)
                 {
                     for (int j = 0; j < creatorTable.Columns.Count; j++)
@@ -52,7 +52,16 @@ namespace SQLTools
                         query += " ";
                         if (j != 2)
                         {
-                            query += creatorTable.Rows[i][j].ToString();
+                            if(j == 0)
+                            {
+                                query += "[";
+                                query += creatorTable.Rows[i][j].ToString();
+                                query += "]";
+                            }
+                            else
+                            {
+                                query += creatorTable.Rows[i][j].ToString();
+                            }
                         }
                         else
                         {

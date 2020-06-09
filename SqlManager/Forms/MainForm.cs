@@ -697,12 +697,11 @@ namespace SqlManager
                 int WidthLB = GridContent.Columns[1].Width;
                 editCell = e.RowIndex;
                 CreateTypeBox();
-                TypeBox.DoubleClick += TypeBox_DoubleClick; ;
                 if (e.ColumnIndex == GridContent.Columns["Type"].Index)
                 {
                     Point p = GridContent.Location;
                     p.X += cellWidth + GridContent.RowHeadersWidth;
-                    p.Y += 2 * cellHeigh + (cellHeigh * editCell);
+                    p.Y += GridContent.ColumnHeadersHeight + cellHeigh + (cellHeigh * editCell);
                     TypeBox.Width = WidthLB;
                     TypeBox.Location = p;
                     this.Controls.Add(TypeBox);
@@ -713,15 +712,6 @@ namespace SqlManager
                     this.Controls.Remove(TypeBox);
                 }
             }
-        }
-
-        private void TypeBox_DoubleClick(object sender, EventArgs e)
-        {
-            GridContent.CurrentCell = GridContent.Rows[editCell].Cells[1];
-            GridContent.BeginEdit(true);
-            GridContent.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
-            this.Controls.Remove(TypeBox);
-            GridContent.EndEdit();
         }
 
         private void DeleteTable(object sender, EventArgs e)
@@ -831,6 +821,7 @@ namespace SqlManager
             if(TypeBox == null)
             {
                 TypeBox = new ListBox();
+                TypeBox.MouseClick += TypeBox_MouseClick;
                 TypeBox.Name = "TypeBox";
                 TypeBox.BackColor = Color.FromArgb(63, 64, 74);
                 TypeBox.ForeColor = Color.White;
@@ -840,6 +831,15 @@ namespace SqlManager
                     TypeBox.Items.Add(type);
                 }
             }
+        }
+
+        private void TypeBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            GridContent.CurrentCell = GridContent.Rows[editCell].Cells[1];
+            GridContent.BeginEdit(true);
+            GridContent.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
+            this.Controls.Remove(TypeBox);
+            GridContent.EndEdit();
         }
 
         private void Disconnection(object sender, EventArgs e)

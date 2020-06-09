@@ -17,7 +17,7 @@ namespace SQLTools
         {
             CloseConnections();
             _connectionStr.InitialCatalog = "";
-            string query = $"Drop DataBase {dbName}";
+            string query = $"Drop DataBase [{dbName}]";
             ExecuteQuery(_connectionStr.ToString(), query);
         }
 
@@ -25,7 +25,7 @@ namespace SQLTools
         {
             CloseConnections();
             _connectionStr.InitialCatalog = dbName;
-            string query = $"Drop Table {tableName}";
+            string query = $"Drop Table [{tableName}]";
             ExecuteQuery(_connectionStr.ToString(), query);
         }
 
