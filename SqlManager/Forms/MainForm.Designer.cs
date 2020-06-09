@@ -92,7 +92,7 @@
             this.GridContent.DefaultCellStyle = dataGridViewCellStyle2;
             this.GridContent.EnableHeadersVisualStyles = false;
             this.GridContent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.GridContent.Location = new System.Drawing.Point(169, 36);
+            this.GridContent.Location = new System.Drawing.Point(160, 36);
             this.GridContent.MultiSelect = false;
             this.GridContent.Name = "GridContent";
             this.GridContent.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;

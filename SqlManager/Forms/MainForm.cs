@@ -71,6 +71,10 @@ namespace SqlManager
 
         ImageList interfaceImages;
 
+        ListBox TypeBox;
+        int editCell;
+
+
         int scrollPointer;
         bool dataChanged = false;
         bool rowsIsAdd = false;
@@ -662,14 +666,64 @@ namespace SqlManager
             TableCreated?.Invoke(this, EventArgs.Empty);
             tableForm.btnActionTable.Click -= CreateNewTable;
             ContentMode = Mode.Viewer;
+            GridContent.CellBeginEdit -= GridContent_CellBeginEdit;
+            GridContent.CellEndEdit -= GridContent_CellEndEdit;
             ClearTable();
         }
         private void CreateTable(object sender, EventArgs e)
         {
             TableCreate?.Invoke(this, EventArgs.Empty);
             ContentMode = Mode.Creator;
+            GridContent.CellBeginEdit += GridContent_CellBeginEdit;
+            GridContent.CellEndEdit += GridContent_CellEndEdit;
             CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
         }
+
+        private void GridContent_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if(GridContent.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() != "")
+            {
+                this.Controls.Remove(TypeBox);
+            }
+            
+        }
+
+        private void GridContent_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            if(GridContent.Name == "Creator")
+            {
+                int cellHeigh = GridContent.RowTemplate.Height;
+                int cellWidth = GridContent.Columns[0].Width;
+                int WidthLB = GridContent.Columns[1].Width;
+                editCell = e.RowIndex;
+                CreateTypeBox();
+                TypeBox.DoubleClick += TypeBox_DoubleClick; ;
+                if (e.ColumnIndex == GridContent.Columns["Type"].Index)
+                {
+                    Point p = GridContent.Location;
+                    p.X += cellWidth + GridContent.RowHeadersWidth;
+                    p.Y += 2 * cellHeigh + (cellHeigh * editCell);
+                    TypeBox.Width = WidthLB;
+                    TypeBox.Location = p;
+                    this.Controls.Add(TypeBox);
+                    TypeBox.BringToFront();
+                }
+                if (e.ColumnIndex == GridContent.Columns["Name"].Index || e.ColumnIndex == GridContent.Columns["Nullable"].Index)
+                {
+                    this.Controls.Remove(TypeBox);
+                }
+            }
+        }
+
+        private void TypeBox_DoubleClick(object sender, EventArgs e)
+        {
+            GridContent.CurrentCell = GridContent.Rows[editCell].Cells[1];
+            GridContent.BeginEdit(true);
+            GridContent.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
+            this.Controls.Remove(TypeBox);
+            GridContent.EndEdit();
+        }
+
         private void DeleteTable(object sender, EventArgs e)
         {
             TableDeleted?.Invoke(this, EventArgs.Empty);
@@ -736,6 +790,57 @@ namespace SqlManager
             GridContent.Columns["_FilterRow"].Visible = false;
         }
 
+        private List<string> GetListTypes()
+        {
+            var Types = new List<string>();
+            Types.Add("BIT");
+            Types.Add("TINYINT");
+            Types.Add("SMALLINT");
+            Types.Add("INT");
+            Types.Add("BIGINT");
+            Types.Add("DECIMAL(18, 0)");
+            Types.Add("NUMERIC(18, 0)");
+            Types.Add("SMALLMONEY");
+            Types.Add("MONEY");
+            Types.Add("FLOAT");
+            Types.Add("REAL");
+            Types.Add("DATE");
+            Types.Add("TIME(7)");
+            Types.Add("DATETIME");
+            Types.Add("DATETIME2(7)");
+            Types.Add("SMALLDATETIME(7)");
+            Types.Add("DATETIMEOFFSET");
+            Types.Add("CHAR(10)");
+            Types.Add("VARCHAR");
+            Types.Add("NVARCHAR(24)");
+            Types.Add("BINARY(50)");
+            Types.Add("VARBINARY");
+            Types.Add("UNIQUEIDENTIFIER");
+            Types.Add("TIMESTAMP");
+            Types.Add("CURSOR");
+            Types.Add("HIERARCHYID");
+            Types.Add("SQL_VARIANT");
+            Types.Add("XML");
+            Types.Add("TABLE");
+            Types.Add("GEOGRAPHY");
+            Types.Add("GEOMETRY");
+            return Types;
+        } 
+        private void CreateTypeBox()
+        {
+            if(TypeBox == null)
+            {
+                TypeBox = new ListBox();
+                TypeBox.Name = "TypeBox";
+                TypeBox.BackColor = Color.FromArgb(63, 64, 74);
+                TypeBox.ForeColor = Color.White;
+                TypeBox.BorderStyle = BorderStyle.None;
+                foreach (var type in GetListTypes())
+                {
+                    TypeBox.Items.Add(type);
+                }
+            }
+        }
 
         private void Disconnection(object sender, EventArgs e)
         {
