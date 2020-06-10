@@ -92,7 +92,7 @@
             this.GridContent.DefaultCellStyle = dataGridViewCellStyle2;
             this.GridContent.EnableHeadersVisualStyles = false;
             this.GridContent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.GridContent.Location = new System.Drawing.Point(169, 36);
+            this.GridContent.Location = new System.Drawing.Point(181, 36);
             this.GridContent.MultiSelect = false;
             this.GridContent.Name = "GridContent";
             this.GridContent.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -115,7 +115,7 @@
             this.GridContent.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.GridContent.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.GridContent.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridContent.Size = new System.Drawing.Size(724, 589);
+            this.GridContent.Size = new System.Drawing.Size(712, 589);
             this.GridContent.TabIndex = 1;
             // 
             // TreeViewExplorer

@@ -197,10 +197,15 @@ namespace SqlManager
             {
                 GridContent.Rows[value].Selected = true;
                 GridContent.FirstDisplayedScrollingRowIndex = GridContent.SelectedRows[0].Index;
+                GridContent.Scroll += TableScroll;
             }
             get
             {
-                return GridContent.SelectedRows[0].Index;
+                if(GridContent.Rows.Count - 1 != GridContent.SelectedRows[0].Index)
+                {
+                    return GridContent.SelectedRows[0].Index;
+                }
+                return GridContent.SelectedRows[0].Index - 1;
             }
         }
         
@@ -634,7 +639,7 @@ namespace SqlManager
             int allCellHeight = GridContent.Rows.GetRowsHeight(DataGridViewElementStates.None);
             int oneCellHeight = allCellHeight / countRows;
             int currentRows = GridContent.VerticalScrollingOffset / oneCellHeight;
-            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows - currentRows <= 100 && !rowsIsAdd)
+            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows - currentRows <= 100 && !rowsIsAdd && countRows >= 1000)
             {
                 UploadRows?.Invoke(this, EventArgs.Empty);
                 scrollPointer = currentRows;
@@ -650,7 +655,7 @@ namespace SqlManager
         }
         private void ShowTableContextMenu(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && GridContent.Name != "Creator")
             {
                 GridRowContext.Show(GridContent, e.Location);
             }
@@ -659,8 +664,6 @@ namespace SqlManager
         {
             GridContent.DataSource = null;
         }
-
-
         private void CreateNewTable(object sender, EventArgs e)
         {
             TableCreated?.Invoke(this, EventArgs.Empty);
@@ -670,9 +673,6 @@ namespace SqlManager
             GridContent.CellBeginEdit -= GridContent_CellBeginEdit;
             ClearTable();
         }
-
-        
-
         private void CreateTable(object sender, EventArgs e)
         {
             TableCreate?.Invoke(this, EventArgs.Empty);
@@ -681,8 +681,6 @@ namespace SqlManager
             GridContent.ColumnWidthChanged += GridContent_ColumnWidthChanged;
             CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
         }
-
-
         private void GridContent_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if(GridContent.Name == "Creator")
@@ -708,7 +706,6 @@ namespace SqlManager
                 }
             }
         }
-
         private void GridContent_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
         {
             if(GridContent.Name == "Creator")
@@ -716,7 +713,6 @@ namespace SqlManager
                 this.Controls.Remove(TypeBox);
             }
         }
-
         private void DeleteTable(object sender, EventArgs e)
         {
             TableDeleted?.Invoke(this, EventArgs.Empty);
@@ -774,6 +770,7 @@ namespace SqlManager
         }
         private void SearchRow(object sender, EventArgs e)
         {
+            GridContent.Scroll -= TableScroll;
             RowSearched?.Invoke(this, EventArgs.Empty);
         }
         private void DataFilter(object sender, EventArgs e)
@@ -835,7 +832,6 @@ namespace SqlManager
                 }
             }
         }
-
         private void TypeBox_MouseClick(object sender, MouseEventArgs e)
         {
             GridContent.CurrentCell = GridContent.Rows[editCell].Cells[1];

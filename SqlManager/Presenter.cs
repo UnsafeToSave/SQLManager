@@ -56,10 +56,35 @@ namespace SqlManager
             _tools.DataFilter(_view.Filter);
         }
 
-        private void RowSearched(object sender, EventArgs e)
+        private async void RowSearched(object sender, EventArgs e)
         {
             if(_tools.SearchRow(_view.SearchColumn, _view.SearchValue, _view.SelectedRowIndex, out int index))
-                _view.SelectedRowIndex = index;
+            {
+                if (!await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable))
+                {
+                    int maxRows = await _tools.GetRowsCount(_view.CurrentDB, _view.CurrentTable);
+                    if (index < 500)
+                    {
+                        _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable, 0, (1000 - index));
+                        _view.SelectedRowIndex = index;
+                    }
+                    else if((index + 500) >= maxRows)
+                    {
+                        int rowIndex = 500 + maxRows - index;
+                        _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable, (index - rowIndex), 1000);
+                        _view.SelectedRowIndex = rowIndex;
+                    }
+                    else
+                    {
+                        _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable, index - 500, 1000);
+                        _view.SelectedRowIndex = 500;
+                    }
+                }
+                else
+                {
+                    _view.SelectedRowIndex = index;
+                }
+            }
             else
                 _message.ShowMessage("Значение не найдено.");
         }

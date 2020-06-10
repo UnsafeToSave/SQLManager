@@ -16,7 +16,7 @@ namespace SQLTools
         void Connection(string dataSource, SqlAuthenticationMethod method, string login = "", string password = "");
         Task<TreeNode[]> GetDBNames();
         bool TryGetTable(string dbName, string tableName);
-        Task<DataTable> GetNewTable(string InitialCatalog, string tableName);
+        Task<DataTable> GetNewTable(string InitialCatalog, string tableName, int startRow = 0, int maxRows = 1000);
         Task<DataTable> FillingTable(string IntitialCatalog);
         void DeleteRow(int index);
         void ChangeRow();
@@ -33,6 +33,7 @@ namespace SQLTools
         bool IsLockDB(string dbName);
         bool IsExist(string fullPath);
         Task<bool> IsFullTable(string InitialCatalog, string tableName);
+        Task<int> GetRowsCount(string InitialCatalog, string tableName);
         void CloseApp();
     }
 
@@ -97,9 +98,9 @@ namespace SQLTools
             return false;
         }
 
-        public async Task<DataTable> GetNewTable(string InitialCatalog, string tableName)
+        public async Task<DataTable> GetNewTable(string InitialCatalog, string tableName, int startRow = 0, int maxRows = 1000)
         {
-           return await Task.Run(() => TableTools.GetNewTable(InitialCatalog, tableName));
+           return await Task.Run(() => TableTools.GetNewTable(InitialCatalog, tableName, startRow, maxRows));
         }
 
         public async Task<DataTable> FillingTable(string InitialCatalog)
@@ -180,6 +181,11 @@ namespace SQLTools
         public void DataFilter (string filter)
         {
            TableTools.DataFilter(filter);
+        }
+
+        public async Task<int> GetRowsCount (string InitialCatalog, string tableName)
+        {
+            return TableTools.GetRowsCount(InitialCatalog, tableName);
         }
     }
 }

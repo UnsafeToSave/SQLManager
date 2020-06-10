@@ -90,7 +90,7 @@ namespace SQLTools
 
         internal async static Task<bool> IsFullTable(string InitialCatalog, string tableName)
         {
-            _maxRows = await Task.Run(() => TableTools.GetCountRows(InitialCatalog, tableName));
+            _maxRows = await Task.Run(() => TableTools.GetRowsCount(InitialCatalog, tableName));
             if(TableTools.CurrentRowsCount >= _maxRows)
             {
                 return true;

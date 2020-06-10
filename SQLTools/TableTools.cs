@@ -14,6 +14,7 @@ namespace SQLTools
         static SqlConnectionStringBuilder _connectionStr = ConfigConnection.GetConnectionBuilder();
         static SqlDataAdapter _adapter = null;
         static DataTable currentTable;
+        static string _value;
         private static int fillingStep = 20000;
 
         internal static int CurrentRowsCount {
@@ -23,7 +24,7 @@ namespace SQLTools
             }
         }
 
-        internal static DataTable GetNewTable(string InitialCatalog, string tableName, int startRows = 0, int maxRows = 1000)
+        internal static DataTable GetNewTable(string InitialCatalog, string tableName, int startRows, int maxRows)
         {
             currentTable = new DataTable(tableName);
 
@@ -33,7 +34,7 @@ namespace SQLTools
 
             try
             { 
-                _adapter.Fill(0, maxRows, currentTable);
+                _adapter.Fill(startRows, maxRows, currentTable);
             }
             catch (SqlException e)
             {
@@ -70,30 +71,6 @@ namespace SQLTools
             return newTable;
         }
 
-        internal static int GetCountRows(string InitialCatalog, string tableName)
-        {
-            int rowsCount = 0;
-
-            string query = $"Select Count(*) from {tableName}";
-
-            using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
-            {
-                IDbCommand command = new SqlCommand(query);
-                command.Connection = connection;
-                connection.Open();
-
-                IDataReader reader = command.ExecuteReader();
-                reader.Read();
-
-                rowsCount = reader.GetInt32(0);
-
-
-                CloseConnection(connection);
-            }
-
-            return rowsCount;
-        } 
-
         internal static void DeleteRow(int index)
         {
             currentTable.AcceptChanges();
@@ -113,18 +90,10 @@ namespace SQLTools
 
         internal static bool SearchRow(string columnName, string value, int selectRowId, out int rowIndex)
         {
+            string query = $"if ((Select Count(*) from {currentTable.TableName} where {columnName} = '{value}') = 1) Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from {currentTable.TableName} where {columnName} = '{value}'); else Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from (select top 1 * from (select * from {currentTable.TableName} where {columnName} = '{value}' and {currentTable.Columns[0].ColumnName} > {currentTable.Rows[selectRowId][0]}) as cutTable) as SelectTopElement)";
             if (Validation.CheckType(value, currentTable.Columns[columnName].DataType))
             {
-                using (SqlConnection connection = new SqlConnection(_connectionStr.ToString()))
-                {
-                    IDbCommand command = new SqlCommand($"if ((Select Count(*) from {currentTable.TableName} where {columnName} = '{value}') = 1) Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from {currentTable.TableName} where {columnName} = '{value}'); else Select Count(*) from {currentTable.TableName} where {currentTable.Columns[0].ColumnName} <= (select {currentTable.Columns[0].ColumnName} from (select top 1 * from (select * from {currentTable.TableName} where {columnName} = '{value}' and {currentTable.Columns[0].ColumnName} > {currentTable.Rows[selectRowId][0]}) as cutTable) as SelectTopElement)");
-                    command.Connection = connection;
-                    connection.Open();
-                    IDataReader reader = command.ExecuteReader();
-                    reader.Read();
-                    rowIndex = reader.GetInt32(0) - 1;
-                    CloseConnection(connection);
-                }
+                rowIndex = IntExectue(_connectionStr.ToString(), query) - 1;
             }
             else
                 rowIndex = -1;
@@ -152,6 +121,29 @@ namespace SQLTools
                 }
             }
             currentTable.DefaultView.RowFilter = string.Format("[_FilterRow] LIKE '%{0}%'", filter);
+        }
+
+        internal static int GetRowsCount(string InitialCatalog, string tableName)
+        {
+            _connectionStr.InitialCatalog = InitialCatalog;
+            string query = $"Select Count(*) from {tableName}";
+            return IntExectue(_connectionStr.ToString(), query);
+        }
+
+        private static int IntExectue(string connectionStr, string query)
+        {
+            int result;
+            using (SqlConnection connection = new SqlConnection(connectionStr))
+            {
+                IDbCommand command = new SqlCommand(query);
+                command.Connection = connection;
+                connection.Open();
+                IDataReader reader = command.ExecuteReader();
+                reader.Read();
+                result = reader.GetInt32(0);
+                CloseConnection(connection);
+            }
+            return result;
         }
 
         private static void CloseConnections()
