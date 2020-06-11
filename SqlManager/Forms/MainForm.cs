@@ -33,7 +33,10 @@ namespace SqlManager
         string Filter { get; }
         string Login { get; }
         string Password { get; }
+        string Query { get; }
         int SelectedRowIndex { get; set; }
+        bool IsFull { get; set; }
+        bool IsSearch { get; set; }
         TreeNode[] Explorer { set; }
         DataTable Content { set; }
         DataTable CurrentRow { get; }
@@ -58,6 +61,7 @@ namespace SqlManager
         event EventHandler RowSearched;
         event EventHandler DataFiltered;
         event EventHandler UploadRows;
+        event EventHandler QueryExecute;
 
     }
     
@@ -68,6 +72,7 @@ namespace SqlManager
         TableForm tableForm;
         SearchForm searchForm;
         FilterForm filterForm;
+        QueryForm queryForm;
 
         ImageList interfaceImages;
 
@@ -78,6 +83,8 @@ namespace SqlManager
         int scrollPointer;
         bool dataChanged = false;
         bool rowsIsAdd = false;
+        bool isFull = false;
+        bool isSearch = false;
         string currentDB { get; set; }
         Mode ContentMode { get; set; }
 
@@ -191,21 +198,50 @@ namespace SqlManager
                     throw new Exception("Ошибка создания формы соединения");
             }
         }
+        public string Query
+        {
+            get
+            {
+                return queryForm.QueryField.Text;
+            }
+        }
         public int SelectedRowIndex
         {
             set
             {
-                GridContent.Rows[value].Selected = true;
-                GridContent.FirstDisplayedScrollingRowIndex = GridContent.SelectedRows[0].Index;
-                GridContent.Scroll += TableScroll;
+                Table.Rows[value].Selected = true;
+                Table.FirstDisplayedScrollingRowIndex = Table.SelectedRows[0].Index;
             }
             get
             {
-                if(GridContent.Rows.Count - 1 != GridContent.SelectedRows[0].Index)
+                if(Table.Rows.Count - 1 != Table.SelectedRows[0].Index)
                 {
-                    return GridContent.SelectedRows[0].Index;
+                    return Table.SelectedRows[0].Index;
                 }
-                return GridContent.SelectedRows[0].Index - 1;
+                return Table.SelectedRows[0].Index - 1;
+            }
+        }
+        public bool IsFull
+        {
+            get
+            {
+                return isFull;
+            }
+
+            set
+            {
+                isFull = value;
+            }
+        }
+        public bool IsSearch
+        {
+            get
+            {
+                return isSearch;
+            }
+            set
+            {
+                isSearch = value;
             }
         }
         
@@ -230,14 +266,14 @@ namespace SqlManager
                 
                 if (value is DataTable)
                 {
-                    GridContent.DataSource = value;
-                    GridContent.Update();
-                    if (GridContent.Name == value.TableName)
+                    Table.DataSource = value;
+                    Table.Update();
+                    if (Table.Name == value.TableName)
                     {
-                        GridContent.FirstDisplayedScrollingRowIndex = scrollPointer;
+                        Table.FirstDisplayedScrollingRowIndex = scrollPointer;
                         rowsIsAdd = false;
                     }
-                    GridContent.Name = value.TableName;
+                    Table.Name = value.TableName;
                 }
                 
             }
@@ -247,15 +283,15 @@ namespace SqlManager
             get
             {
                 var table = new DataTable();
-                for (int i = 0; i < GridContent.Columns.Count; i++)
+                for (int i = 0; i < Table.Columns.Count; i++)
                 {
-                    table.Columns.Add(new DataColumn(GridContent.Columns[i].HeaderText));
+                    table.Columns.Add(new DataColumn(Table.Columns[i].HeaderText));
                 }
                 DataRow row = table.NewRow();
-                int index = GridContent.CurrentRow.Index;
-                for (int i = 0; i < GridContent.Columns.Count; i++)
+                int index = Table.CurrentRow.Index;
+                for (int i = 0; i < Table.Columns.Count; i++)
                 {
-                    row[i] = GridContent.Rows[index].Cells[i].Value;
+                    row[i] = Table.Rows[index].Cells[i].Value;
                 }
                 table.Rows.Add(row);
                 return table;
@@ -298,6 +334,7 @@ namespace SqlManager
         public event EventHandler RowSearched;
         public event EventHandler DataFiltered;
         public event EventHandler UploadRows;
+        public event EventHandler QueryExecute;
         #endregion
 
         #region Меню
@@ -331,6 +368,10 @@ namespace SqlManager
                     filterForm.MenuPanel.Capture = false;
                     m = Message.Create(filterForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
+                case "QueryForm":
+                    queryForm.MenuPanel.Capture = false;
+                    m = Message.Create(queryForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
+                    break;
             }
             this.WndProc(ref m);
         }
@@ -356,6 +397,9 @@ namespace SqlManager
                     break;
                 case "FilterForm":
                     filterForm.Close();
+                    break;
+                case "QueryForm":
+                    queryForm.Close();
                     break;
             }
         }
@@ -448,10 +492,10 @@ namespace SqlManager
             }
             searchForm.cmbSearch.Items.Clear();
             searchForm.fldSearch.Text = "";
-            for (int i = 0; i < GridContent.Columns.Count; i++)
+            for (int i = 0; i < Table.Columns.Count; i++)
             {
-                if (GridContent.Columns[i].HeaderText == "_FilterRow") continue;
-                searchForm.cmbSearch.Items.Add(GridContent.Columns[i].HeaderText);
+                if (Table.Columns[i].HeaderText == "_FilterRow") continue;
+                searchForm.cmbSearch.Items.Add(Table.Columns[i].HeaderText);
             }
             searchForm.cmbSearch.SelectedIndex = 0;
             searchForm.ShowDialog(this);
@@ -467,6 +511,17 @@ namespace SqlManager
             }
             filterForm.ShowDialog(this);
         }
+        private void ShowQueryForm(object sender, EventArgs e)
+        {
+            if(queryForm == null)
+            {
+                queryForm = new QueryForm();
+                queryForm.QueryField.KeyDown += ExecuteQuery;
+                queryForm.btnClose.Click += CloseForm;
+                queryForm.MenuPanel.MouseDown += MoveForm;
+            }
+            queryForm.ShowDialog(this);
+        }
         private void MainForm_Shown(object sender, EventArgs e)
         {
             this.Visible = false;
@@ -480,14 +535,14 @@ namespace SqlManager
 
 
             TreeViewExplorer.AfterSelect += TreeViewExplorer_AfterSelect;
-            GridContent.KeyDown += Table_HotKeyDown;
+            Table.KeyDown += Table_HotKeyDown;
             btnAddDB.Click += ShowDBForm;
             btnRefresh.Click += Refresh;
             btnDeleteDB.Click += DeleteDB;
             btnDisconnect.Click += Disconnection;
-            GridContent.SelectionChanged += Table_SelectionChanged;
-            GridContent.DataError += Table_DataError;
-            GridContent.CellValueChanged += Table_CellValueChanged;
+            Table.SelectionChanged += Table_SelectionChanged;
+            Table.DataError += Table_DataError;
+            Table.CellValueChanged += Table_CellValueChanged;
             TreeViewExplorer.MouseClick += TreeViewExplorer_MouseClick;
             CreateTableTSMItem.Click += CreateTable;
             DeleteDBTSMItem.Click += DeleteDB;
@@ -497,12 +552,9 @@ namespace SqlManager
             DeleteRowTSMItem.Click += DeleteRow;
             FindValueTSMItem.Click += ShowSearchForm;
             FilterTSMItem.Click += ShowFilterForm;
-            GridContent.MouseClick += ShowTableContextMenu;
-            GridContent.Scroll += TableScroll;
+            Table.MouseClick += ShowTableContextMenu;
+            Table.Scroll += TableScroll;
         }
-
-        
-
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             ApplicationClose?.Invoke(this, EventArgs.Empty);
@@ -550,7 +602,7 @@ namespace SqlManager
             if (TreeViewExplorer.SelectedNode.Level > 0)
             {
                 currentDB = TreeViewExplorer.SelectedNode.FullPath.Split('\\')[0];
-                if(GridContent.DataSource != null)
+                if(Table.DataSource != null)
                 {
                     ClearTable();
                 }
@@ -603,7 +655,7 @@ namespace SqlManager
 
         private void Table_HotKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyValue == (char)Keys.F)
+            if (e.Control && e.KeyValue == (char)Keys.F && Table.DataSource != null)
             {
                 ShowSearchForm(sender, EventArgs.Empty);
             }
@@ -622,7 +674,7 @@ namespace SqlManager
         private void Table_SelectionChanged(object sender, EventArgs e)
         {
             //Сохраняет измененную строку
-            if (GridContent.Rows.Count > 1 && dataChanged && ContentMode == Mode.Viewer)
+            if (Table.Rows.Count > 1 && dataChanged && ContentMode == Mode.Viewer)
             {
                 dataChanged = false;
                 RowChanged?.Invoke(this, EventArgs.Empty);
@@ -635,15 +687,20 @@ namespace SqlManager
         }
         private void TableScroll(object sender, ScrollEventArgs e)
         {
-            int countRows = GridContent.Rows.Count;
-            int allCellHeight = GridContent.Rows.GetRowsHeight(DataGridViewElementStates.None);
+            
+            int countRows = Table.Rows.Count;
+            int allCellHeight = Table.Rows.GetRowsHeight(DataGridViewElementStates.None);
             int oneCellHeight = allCellHeight / countRows;
-            int currentRows = GridContent.VerticalScrollingOffset / oneCellHeight;
-            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows - currentRows <= 100 && !rowsIsAdd && countRows >= 1000)
+            int currentRows = Table.VerticalScrollingOffset / oneCellHeight;
+            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows >= 1000)
             {
-                UploadRows?.Invoke(this, EventArgs.Empty);
-                scrollPointer = currentRows;
-                rowsIsAdd = true;
+                if (countRows - currentRows <= 100 && !rowsIsAdd)
+                {
+                    UploadRows?.Invoke(this, EventArgs.Empty);
+                    if (isFull) return;
+                    scrollPointer = currentRows;
+                    rowsIsAdd = true;
+                }
             }
         }
         private void Table_DataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -651,64 +708,64 @@ namespace SqlManager
             MessageBox.Show(e.Exception.Message +
                             $"\r\n Ошибка в строке: {e.RowIndex}, " +
                             $"\r\n Ошибка в столбце: {e.ColumnIndex}, " +
-                            $"\r\n Значение ячейки: {GridContent.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}");
+                            $"\r\n Значение ячейки: {Table.Rows[e.RowIndex].Cells[e.ColumnIndex].Value}");
         }
         private void ShowTableContextMenu(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && GridContent.Name != "Creator")
+            if (e.Button == MouseButtons.Right && Table.Name != "Creator" && Table.DataSource != null)
             {
-                GridRowContext.Show(GridContent, e.Location);
+                GridRowContext.Show(Table, e.Location);
             }
         }
         private void ClearTable()
         {
-            GridContent.DataSource = null;
+            Table.DataSource = null;
         }
         private void CreateNewTable(object sender, EventArgs e)
         {
             TableCreated?.Invoke(this, EventArgs.Empty);
             tableForm.btnActionTable.Click -= CreateNewTable;
             ContentMode = Mode.Viewer;
-            GridContent.ColumnWidthChanged -= GridContent_ColumnWidthChanged;
-            GridContent.CellBeginEdit -= GridContent_CellBeginEdit;
+            Table.ColumnWidthChanged -= Table_ColumnWidthChanged;
+            Table.CellBeginEdit -= Table_CellBeginEdit;
             ClearTable();
         }
         private void CreateTable(object sender, EventArgs e)
         {
             TableCreate?.Invoke(this, EventArgs.Empty);
             ContentMode = Mode.Creator;
-            GridContent.CellBeginEdit += GridContent_CellBeginEdit;
-            GridContent.ColumnWidthChanged += GridContent_ColumnWidthChanged;
+            Table.CellBeginEdit += Table_CellBeginEdit;
+            Table.ColumnWidthChanged += Table_ColumnWidthChanged;
             CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
         }
-        private void GridContent_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        private void Table_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            if(GridContent.Name == "Creator")
+            if(Table.Name == "Creator")
             {
-                int cellHeigh = GridContent.RowTemplate.Height;
-                int cellWidth = GridContent.Columns[0].Width;
-                int WidthLB = GridContent.Columns[1].Width;
+                int cellHeigh = Table.RowTemplate.Height;
+                int cellWidth = Table.Columns[0].Width;
+                int WidthLB = Table.Columns[1].Width;
                 editCell = e.RowIndex;
                 CreateTypeBox();
-                if (e.ColumnIndex == GridContent.Columns["Type"].Index)
+                if (e.ColumnIndex == Table.Columns["Type"].Index)
                 {
-                    Point p = GridContent.Location;
-                    p.X += cellWidth + GridContent.RowHeadersWidth;
-                    p.Y += GridContent.ColumnHeadersHeight + cellHeigh + (cellHeigh * editCell);
+                    Point p = Table.Location;
+                    p.X += cellWidth + Table.RowHeadersWidth;
+                    p.Y += Table.ColumnHeadersHeight + cellHeigh + (cellHeigh * editCell);
                     TypeBox.Width = WidthLB;
                     TypeBox.Location = p;
                     this.Controls.Add(TypeBox);
                     TypeBox.BringToFront();
                 }
-                if (e.ColumnIndex == GridContent.Columns["Name"].Index || e.ColumnIndex == GridContent.Columns["Nullable"].Index)
+                if (e.ColumnIndex == Table.Columns["Name"].Index || e.ColumnIndex == Table.Columns["Nullable"].Index)
                 {
                     this.Controls.Remove(TypeBox);
                 }
             }
         }
-        private void GridContent_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        private void Table_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
         {
-            if(GridContent.Name == "Creator")
+            if(Table.Name == "Creator")
             {
                 this.Controls.Remove(TypeBox);
             }
@@ -765,19 +822,28 @@ namespace SqlManager
         }
         private void SearchRow(object sender, KeyEventArgs e)
         {
-            if ((sender as Control).Name == "fldSearch" && e.KeyData == Keys.Enter)
+            if ((sender as Control).Name == "fldSearch" && e.KeyData == Keys.Enter && !isSearch)
+            {
                 SearchRow(this, EventArgs.Empty);
+            }
         }
         private void SearchRow(object sender, EventArgs e)
         {
-            GridContent.Scroll -= TableScroll;
             RowSearched?.Invoke(this, EventArgs.Empty);
         }
         private void DataFilter(object sender, EventArgs e)
         {
 
             DataFiltered?.Invoke(this, EventArgs.Empty);
-            GridContent.Columns["_FilterRow"].Visible = false;
+            Table.Columns["_FilterRow"].Visible = false;
+        }
+
+        private void ExecuteQuery(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.F5)
+            {
+                QueryExecute(this, EventArgs.Empty);
+            }
         }
 
         private List<string> GetListTypes()
@@ -834,11 +900,11 @@ namespace SqlManager
         }
         private void TypeBox_MouseClick(object sender, MouseEventArgs e)
         {
-            GridContent.CurrentCell = GridContent.Rows[editCell].Cells[1];
-            GridContent.BeginEdit(true);
-            GridContent.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
+            Table.CurrentCell = Table.Rows[editCell].Cells[1];
+            Table.BeginEdit(true);
+            Table.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
             this.Controls.Remove(TypeBox);
-            GridContent.EndEdit();
+            Table.EndEdit();
         }
 
         private void Disconnection(object sender, EventArgs e)
@@ -849,10 +915,6 @@ namespace SqlManager
             Disconnected?.Invoke(this, EventArgs.Empty);
             connectionForm.ShowDialog(this);
         }
-
-
-
-
 
     }
 }

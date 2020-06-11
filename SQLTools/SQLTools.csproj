@@ -51,6 +51,7 @@
     <Compile Include="DeleteObject.cs" />
     <Compile Include="GetListNames.cs" />
     <Compile Include="NameChanger.cs" />
+    <Compile Include="QueryHandler.cs" />
     <Compile Include="SqlTools.cs" />
     <Compile Include="TableTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

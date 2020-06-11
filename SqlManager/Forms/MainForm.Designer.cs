@@ -34,7 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.GridContent = new System.Windows.Forms.DataGridView();
+            this.Table = new System.Windows.Forms.DataGridView();
             this.TreeViewExplorer = new System.Windows.Forms.TreeView();
             this.ExplorerDBContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.CreateTableTSMItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +57,7 @@
             this.FindValueTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterTSMItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteRowTSMItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.GridContent)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Table)).BeginInit();
             this.ExplorerDBContext.SuspendLayout();
             this.ExplorerTableContext.SuspendLayout();
             this.MenuPanel.SuspendLayout();
@@ -66,13 +66,13 @@
             this.GridRowContext.SuspendLayout();
             this.SuspendLayout();
             // 
-            // GridContent
+            // Table
             // 
-            this.GridContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Table.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.GridContent.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.GridContent.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.Table.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.Table.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -80,8 +80,8 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.GridContent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.Table.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.Table.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -89,13 +89,13 @@
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridContent.DefaultCellStyle = dataGridViewCellStyle2;
-            this.GridContent.EnableHeadersVisualStyles = false;
-            this.GridContent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.GridContent.Location = new System.Drawing.Point(181, 36);
-            this.GridContent.MultiSelect = false;
-            this.GridContent.Name = "GridContent";
-            this.GridContent.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.Table.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Table.EnableHeadersVisualStyles = false;
+            this.Table.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
+            this.Table.Location = new System.Drawing.Point(181, 36);
+            this.Table.MultiSelect = false;
+            this.Table.Name = "Table";
+            this.Table.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -103,20 +103,20 @@
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.GridContent.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.Table.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White;
-            this.GridContent.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.GridContent.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
-            this.GridContent.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.White;
-            this.GridContent.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
-            this.GridContent.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
-            this.GridContent.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.GridContent.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.GridContent.Size = new System.Drawing.Size(712, 589);
-            this.GridContent.TabIndex = 1;
+            this.Table.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.Table.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(63)))), ((int)(((byte)(64)))), ((int)(((byte)(74)))));
+            this.Table.RowTemplate.DefaultCellStyle.ForeColor = System.Drawing.Color.White;
+            this.Table.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(143)))), ((int)(((byte)(209)))), ((int)(((byte)(77)))));
+            this.Table.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
+            this.Table.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Table.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.Table.Size = new System.Drawing.Size(712, 553);
+            this.Table.TabIndex = 1;
             // 
             // TreeViewExplorer
             // 
@@ -337,20 +337,20 @@
             this.DeleteRowTSMItem});
             this.GridRowContext.Name = "RowContextMenu";
             this.GridRowContext.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.GridRowContext.Size = new System.Drawing.Size(159, 70);
+            this.GridRowContext.Size = new System.Drawing.Size(208, 70);
             // 
             // FindValueTSMItem
             // 
             this.FindValueTSMItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.FindValueTSMItem.Name = "FindValueTSMItem";
-            this.FindValueTSMItem.Size = new System.Drawing.Size(158, 22);
-            this.FindValueTSMItem.Text = "Поиск значния";
+            this.FindValueTSMItem.Size = new System.Drawing.Size(207, 22);
+            this.FindValueTSMItem.Text = "Поиск значния (Ctrl + F)";
             // 
             // FilterTSMItem
             // 
             this.FilterTSMItem.ForeColor = System.Drawing.Color.White;
             this.FilterTSMItem.Name = "FilterTSMItem";
-            this.FilterTSMItem.Size = new System.Drawing.Size(158, 22);
+            this.FilterTSMItem.Size = new System.Drawing.Size(207, 22);
             this.FilterTSMItem.Text = "Фильтр";
             // 
             // DeleteRowTSMItem
@@ -358,7 +358,7 @@
             this.DeleteRowTSMItem.ForeColor = System.Drawing.Color.White;
             this.DeleteRowTSMItem.Image = ((System.Drawing.Image)(resources.GetObject("DeleteRowTSMItem.Image")));
             this.DeleteRowTSMItem.Name = "DeleteRowTSMItem";
-            this.DeleteRowTSMItem.Size = new System.Drawing.Size(158, 22);
+            this.DeleteRowTSMItem.Size = new System.Drawing.Size(207, 22);
             this.DeleteRowTSMItem.Text = "Удалить строку";
             // 
             // MainForm
@@ -370,13 +370,13 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.MenuPanel);
             this.Controls.Add(this.TreeViewExplorer);
-            this.Controls.Add(this.GridContent);
+            this.Controls.Add(this.Table);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(875, 615);
             this.Name = "MainForm";
             this.Text = "SQL Manager";
-            ((System.ComponentModel.ISupportInitialize)(this.GridContent)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Table)).EndInit();
             this.ExplorerDBContext.ResumeLayout(false);
             this.ExplorerTableContext.ResumeLayout(false);
             this.MenuPanel.ResumeLayout(false);
@@ -389,7 +389,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView GridContent;
+        private System.Windows.Forms.DataGridView Table;
         private System.Windows.Forms.TreeView TreeViewExplorer;
         private System.Windows.Forms.ContextMenuStrip ExplorerDBContext;
         private System.Windows.Forms.ToolStripMenuItem CreateTableTSMItem;

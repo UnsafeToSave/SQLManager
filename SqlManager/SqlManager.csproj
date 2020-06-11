@@ -80,6 +80,12 @@
     <Compile Include="Forms\FilterForm.Designer.cs">
       <DependentUpon>FilterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\QueryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\QueryForm.Designer.cs">
+      <DependentUpon>QueryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SearchForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FilterForm.resx">
       <DependentUpon>FilterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\QueryForm.resx">
+      <DependentUpon>QueryForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchForm.resx">
       <DependentUpon>SearchForm.cs</DependentUpon>

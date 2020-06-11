@@ -41,14 +41,21 @@ namespace SqlManager
             _view.RowSearched += RowSearched;
             _view.DataFiltered += DataFiltered;
             _view.UploadRows += _view_UploadRows;
+            _view.QueryExecute += _view_QueryExecute;
+        }
+
+        private void _view_QueryExecute(object sender, EventArgs e)
+        {
+            
         }
 
         private async void _view_UploadRows(object sender, EventArgs e)
         {
-            if(!await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable))
+            if (!await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable))
             {
                 _view.Content = await  _tools.FillingTable(_view.CurrentDB);
             }
+            _view.IsFull = await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable);
         }
 
         private void DataFiltered(object sender, EventArgs e)
@@ -58,6 +65,7 @@ namespace SqlManager
 
         private async void RowSearched(object sender, EventArgs e)
         {
+            _view.IsSearch = true;
             if(_tools.SearchRow(_view.SearchColumn, _view.SearchValue, _view.SelectedRowIndex, out int index))
             {
                 if (!await _tools.IsFullTable(_view.CurrentDB, _view.CurrentTable))
@@ -87,6 +95,8 @@ namespace SqlManager
             }
             else
                 _message.ShowMessage("Значение не найдено.");
+
+            _view.IsSearch = false;
         }
 
         private async void TableRenamed(object sender, EventArgs e)
