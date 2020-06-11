@@ -14,7 +14,6 @@ namespace SQLTools
         static SqlConnectionStringBuilder _connectionStr = ConfigConnection.GetConnectionBuilder();
         static SqlDataAdapter _adapter = null;
         static DataTable currentTable;
-        static string _value;
         private static int fillingStep = 20000;
 
         internal static int CurrentRowsCount {

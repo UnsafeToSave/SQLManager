@@ -389,14 +389,11 @@
         }
 
         #endregion
-        private System.Windows.Forms.DataGridView Table;
-        private System.Windows.Forms.TreeView TreeViewExplorer;
         private System.Windows.Forms.ContextMenuStrip ExplorerDBContext;
         private System.Windows.Forms.ToolStripMenuItem CreateTableTSMItem;
         private System.Windows.Forms.ToolStripMenuItem DeleteDBTSMItem;
         private System.Windows.Forms.ContextMenuStrip ExplorerTableContext;
         private System.Windows.Forms.ToolStripMenuItem DeleteTableTSMItem;
-        private System.Windows.Forms.Panel MenuPanel;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnMinimize;
         private System.Windows.Forms.Button btnAddDB;
@@ -405,13 +402,16 @@
         private System.Windows.Forms.Button btnDeleteDB;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ContextMenuStrip GridRowContext;
         private System.Windows.Forms.ToolStripMenuItem DeleteRowTSMItem;
         private System.Windows.Forms.ToolStripMenuItem RenameDBTSMItem;
         private System.Windows.Forms.ToolStripMenuItem RenameTableTSMItem;
         private System.Windows.Forms.ToolStripMenuItem FindValueTSMItem;
         private System.Windows.Forms.ToolStripMenuItem FilterTSMItem;
         private System.Windows.Forms.Button btnDisconnect;
+        protected internal System.Windows.Forms.DataGridView Table;
+        protected internal System.Windows.Forms.ContextMenuStrip GridRowContext;
+        protected internal System.Windows.Forms.TreeView TreeViewExplorer;
+        protected internal System.Windows.Forms.Panel MenuPanel;
     }
 }
 

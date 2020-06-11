@@ -1,4 +1,6 @@
 ﻿using SqlManager.Forms;
+using SqlManager.InterfaceHandler;
+using menu = SqlManager.InterfaceHandler.Menu;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ using System.Windows.Forms;
 
 namespace SqlManager
 {
-    enum Mode
+    public enum Mode
     {
         Viewer,
         Creator,
@@ -67,63 +69,50 @@ namespace SqlManager
     
     public partial class MainForm : Form, IMainForm
     {
-        ConnectionForm connectionForm;
-        DBForm dbForm; 
-        TableForm tableForm;
-        SearchForm searchForm;
-        FilterForm filterForm;
-        QueryForm queryForm;
-
         ImageList interfaceImages;
 
-        ListBox TypeBox;
-        int editCell;
-
-
-        int scrollPointer;
-        bool dataChanged = false;
-        bool rowsIsAdd = false;
+        public int ScrollPointer { get; set; }
+        
         bool isFull = false;
         bool isSearch = false;
         string currentDB { get; set; }
-        Mode ContentMode { get; set; }
 
         #region Реализация интерфейса IMainForm
         public string ServerName
         {
             get
             {
-                return connectionForm.fldConnectionString.Text;
+                return FormContainer.connectionForm.fldConnectionString.Text;
             }
         }
         public string DBName
         {
             set
             {
-                if (dbForm == null)
+                if (FormContainer.dbForm == null)
                 {
-                    dbForm = new DBForm();
+                    FormContainer.dbForm = new DBForm();
                 }
-                dbForm.fldDBName.Text = value;
+                FormContainer.dbForm.fldDBName.Text = value;
             }
             get
             {
-                return dbForm.fldDBName.Text;
+                return FormContainer.dbForm.fldDBName.Text;
             }
         }
         public string TableName
         {
             set
             {
-                if (tableForm == null)
+                if (FormContainer.tableForm == null)
                 {
-                    tableForm = new TableForm();
+                    FormContainer.tableForm = new TableForm();
                 }
-                tableForm.fldTableName.Text = value;
+                FormContainer.tableForm.fldTableName.Text = value;
             }
             get
             {
-                return tableForm.fldTableName.Text;
+                return FormContainer.tableForm.fldTableName.Text;
             }
         }
         public string CurrentDB
@@ -157,30 +146,30 @@ namespace SqlManager
         {
             get
             {
-                return searchForm.cmbSearch.SelectedItem.ToString();
+                return FormContainer.searchForm.cmbSearch.SelectedItem.ToString();
             }
         }
         public string SearchValue
         {
             get
             {
-                return searchForm.fldSearch.Text;
+                return FormContainer.searchForm.fldSearch.Text;
             }
         }
         public string Filter
         {
             get
             {
-                return filterForm.fldFilter.Text;
+                return FormContainer.filterForm.fldFilter.Text;
             }
         }
         public string Login 
         { 
             get
             {
-                if (connectionForm != null)
+                if (FormContainer.connectionForm != null)
                 {
-                    return connectionForm.fldLogin.Text;
+                    return FormContainer.connectionForm.fldLogin.Text;
                 }
                 else
                     throw new Exception("Ошибка создания формы соединения");
@@ -190,9 +179,9 @@ namespace SqlManager
         {
             get
             {
-                if (connectionForm != null)
+                if (FormContainer.connectionForm != null)
                 {
-                    return connectionForm.fldPass.Text;
+                    return FormContainer.connectionForm.fldPass.Text;
                 }
                 else
                     throw new Exception("Ошибка создания формы соединения");
@@ -202,7 +191,7 @@ namespace SqlManager
         {
             get
             {
-                return queryForm.QueryField.Text;
+                return FormContainer.queryForm.QueryField.Text;
             }
         }
         public int SelectedRowIndex
@@ -270,8 +259,8 @@ namespace SqlManager
                     Table.Update();
                     if (Table.Name == value.TableName)
                     {
-                        Table.FirstDisplayedScrollingRowIndex = scrollPointer;
-                        rowsIsAdd = false;
+                        Table.FirstDisplayedScrollingRowIndex = ScrollPointer;
+                        TableHandler.rowsIsAdd = false;
                     }
                     Table.Name = value.TableName;
                 }
@@ -301,9 +290,9 @@ namespace SqlManager
         {
             get
             {
-                if (connectionForm != null)
+                if (FormContainer.connectionForm != null)
                 {
-                    if (connectionForm.Authentication.Items[connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности SQL Server")
+                    if (FormContainer.connectionForm.Authentication.Items[FormContainer.connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности SQL Server")
                     {
                         return SqlAuthenticationMethod.SqlPassword;
                     }
@@ -338,78 +327,22 @@ namespace SqlManager
         #endregion
 
         #region Меню
-        private void MoveForm(object sender, MouseEventArgs e)
+        public void MoveForm(object sender, MouseEventArgs e)
         {
-            Message m = default;
-            switch ((sender as Panel).Parent.Name)
-            {
-                case "MainForm":
-                    MenuPanel.Capture = false;
-                    m = Message.Create(this.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                     
-                    break;
-                case "ConnectionForm":
-                    connectionForm.MenuPanel.Capture = false;
-                    m = Message.Create(connectionForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-                case "DBForm":
-                    dbForm.MenuPanel.Capture = false;
-                    m = Message.Create(dbForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-                case "TableForm":
-                    tableForm.MenuPanel.Capture = false;
-                    m = Message.Create(tableForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-                case "SearchForm":
-                    searchForm.MenuPanel.Capture = false;
-                    m = Message.Create(searchForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-                case "FilterForm":
-                    filterForm.MenuPanel.Capture = false;
-                    m = Message.Create(filterForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-                case "QueryForm":
-                    queryForm.MenuPanel.Capture = false;
-                    m = Message.Create(queryForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
-                    break;
-            }
+            Message m = menu.MoveForm(sender,e);
             this.WndProc(ref m);
         }
         private void CloseForm(object sender, EventArgs e)
         {
-            switch ((sender as Button).Parent.Parent.Name)
-            {
-                case "MainForm":
-                    this.Close();
-                    break;
-                case "ConnectionForm":
-                    connectionForm.Close();
-                    Application.Exit();
-                    break;
-                case "DBForm":
-                    dbForm.Close();
-                    break;
-                case "TableForm":
-                    tableForm.Close();
-                    break;
-                case "SearchForm":
-                    searchForm.Close();
-                    break;
-                case "FilterForm":
-                    filterForm.Close();
-                    break;
-                case "QueryForm":
-                    queryForm.Close();
-                    break;
-            }
+            menu.CloseForm(sender, e);
         }
         private void MinimizeWindow(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Minimized;
+            menu.MinimizeWindow(sender, e);
         }
         private void MaximizeWindow(object sender, EventArgs e)
         {
-            this.WindowState = FormWindowState.Maximized;
+            menu.MaximizeWindow(sender, e);
         }
         #endregion
 
@@ -423,7 +356,7 @@ namespace SqlManager
 
             this.Shown += MainForm_Shown;
             this.FormClosing += MainForm_FormClosing;
-
+            
         }
 
         private void LoadResources()
@@ -438,94 +371,84 @@ namespace SqlManager
 
         private void ShowConnectionForm()
         {
-            if(connectionForm == null)
+            if (FormContainer.connectionForm == null)
             {
-                connectionForm = new ConnectionForm();
-                connectionForm.btnClose.Click += CloseForm;
-                connectionForm.MenuPanel.MouseDown += MoveForm;
-                connectionForm.btnConnection.Click += Connection;
-                connectionForm.fldConnectionString.KeyDown += Connection;
-                connectionForm.Authentication.SelectedIndexChanged += AuthenticationChange;
+                FormContainer.connectionForm = new ConnectionForm();
+                FormContainer.connectionForm.btnClose.Click += CloseForm;
+                FormContainer.connectionForm.MenuPanel.MouseDown += MoveForm;
+                FormContainer.connectionForm.btnConnection.Click += Connection;
+                FormContainer.connectionForm.fldConnectionString.KeyDown += Connection;
+                FormContainer.connectionForm.Authentication.SelectedIndexChanged += AuthenticationChange;
             }
-            connectionForm.Authentication.SelectedIndex = 0;
+            FormContainer.connectionForm.Authentication.SelectedIndex = 0;
 
-            connectionForm.Show(this);
-            
+            FormContainer.connectionForm.Show(this);
+
         }
 
 
         private void ShowDBForm(object sender, EventArgs e)
         {
-            if (dbForm == null)
-            {
-                dbForm = new DBForm();
-                dbForm.MenuPanel.MouseDown += MoveForm;
-                dbForm.btnClose.Click += CloseDBForm;
-                dbForm.btnActionDB.Click += CreateDB;
-                dbForm.fldDBName.KeyDown += CreateDB;
-            }
-            dbForm.fldDBName.Text = "";
-            dbForm.ShowDialog(this);
-
+            ShowForm.ShowDBForm(sender, e);
         }
-        private void ShowTableForm(object sender, EventArgs e)
+        public void ShowTableForm(object sender, EventArgs e)
         {
-            if (tableForm == null)
+            if (FormContainer.tableForm == null)
             {
-                tableForm = new TableForm();
+                FormContainer.tableForm = new TableForm();
             }
-            tableForm.btnClose.Click += CloseForm;
-            tableForm.MenuPanel.MouseDown += MoveForm;
-            tableForm.btnActionTable.Click += CreateNewTable;
-            tableForm.fldTableName.Text = "";
-            tableForm.ShowDialog(this);
+            FormContainer.tableForm.btnClose.Click += CloseForm;
+            FormContainer.tableForm.MenuPanel.MouseDown += MoveForm;
+            FormContainer.tableForm.btnActionTable.Click += SaveNewTable;
+            FormContainer.tableForm.fldTableName.Text = "";
+            FormContainer.tableForm.ShowDialog(this);
         }
-        private void ShowSearchForm(object sender, EventArgs e)
+        public void ShowSearchForm(object sender, EventArgs e)
         {
-            if (searchForm == null)
+            if (FormContainer.searchForm == null)
             {
-                searchForm = new SearchForm();
-                searchForm.btnClose.Click += CloseForm;
-                searchForm.MenuPanel.MouseDown += MoveForm;
-                searchForm.btnSearch.Click += SearchRow;
-                searchForm.fldSearch.KeyDown += SearchRow;
+                FormContainer.searchForm = new SearchForm();
+                FormContainer.searchForm.btnClose.Click += CloseForm;
+                FormContainer.searchForm.MenuPanel.MouseDown += MoveForm;
+                FormContainer.searchForm.btnSearch.Click += SearchRow;
+                FormContainer.searchForm.fldSearch.KeyDown += SearchRow;
             }
-            searchForm.cmbSearch.Items.Clear();
-            searchForm.fldSearch.Text = "";
+            FormContainer.searchForm.cmbSearch.Items.Clear();
+            FormContainer.searchForm.fldSearch.Text = "";
             for (int i = 0; i < Table.Columns.Count; i++)
             {
                 if (Table.Columns[i].HeaderText == "_FilterRow") continue;
-                searchForm.cmbSearch.Items.Add(Table.Columns[i].HeaderText);
+                FormContainer.searchForm.cmbSearch.Items.Add(Table.Columns[i].HeaderText);
             }
-            searchForm.cmbSearch.SelectedIndex = 0;
-            searchForm.ShowDialog(this);
+            FormContainer.searchForm.cmbSearch.SelectedIndex = 0;
+            FormContainer.searchForm.ShowDialog(this);
         }
         private void ShowFilterForm(object sender, EventArgs e)
         {
-            if(filterForm == null)
+            if(FormContainer.filterForm == null)
             {
-                filterForm = new FilterForm();
-                filterForm.btnClose.Click += CloseForm;
-                filterForm.MenuPanel.MouseDown += MoveForm;
-                filterForm.fldFilter.TextChanged += DataFilter;
+                FormContainer.filterForm = new FilterForm();
+                FormContainer.filterForm.btnClose.Click += CloseForm;
+                FormContainer.filterForm.MenuPanel.MouseDown += MoveForm;
+                FormContainer.filterForm.fldFilter.TextChanged += DataFilter;
             }
-            filterForm.ShowDialog(this);
+            FormContainer.filterForm.ShowDialog(this);
         }
         private void ShowQueryForm(object sender, EventArgs e)
         {
-            if(queryForm == null)
+            if(FormContainer.queryForm == null)
             {
-                queryForm = new QueryForm();
-                queryForm.QueryField.KeyDown += ExecuteQuery;
-                queryForm.btnClose.Click += CloseForm;
-                queryForm.MenuPanel.MouseDown += MoveForm;
+                FormContainer.queryForm = new QueryForm();
+                FormContainer.queryForm.QueryField.KeyDown += ExecuteQuery;
+                FormContainer.queryForm.btnClose.Click += CloseForm;
+                FormContainer.queryForm.MenuPanel.MouseDown += MoveForm;
             }
-            queryForm.ShowDialog(this);
+            FormContainer.queryForm.ShowDialog(this);
         }
         private void MainForm_Shown(object sender, EventArgs e)
         {
             this.Visible = false;
-            ContentMode = Mode.Viewer;
+            TableHandler.ContentMode = Mode.Viewer;
             TreeViewExplorer.ImageList = interfaceImages;
 
             MenuPanel.MouseDown += MoveForm;
@@ -544,7 +467,7 @@ namespace SqlManager
             Table.DataError += Table_DataError;
             Table.CellValueChanged += Table_CellValueChanged;
             TreeViewExplorer.MouseClick += TreeViewExplorer_MouseClick;
-            CreateTableTSMItem.Click += CreateTable;
+            CreateTableTSMItem.Click += CreateNewTable;
             DeleteDBTSMItem.Click += DeleteDB;
             RenameDBTSMItem.Click += Rename;
             DeleteTableTSMItem.Click += DeleteTable;
@@ -554,6 +477,9 @@ namespace SqlManager
             FilterTSMItem.Click += ShowFilterForm;
             Table.MouseClick += ShowTableContextMenu;
             Table.Scroll += TableScroll;
+            //-----------------------
+            FormContainer.mainForm = this;
+            CreateEventDictionary();
         }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -562,9 +488,9 @@ namespace SqlManager
 
         private void Connection(object sender, EventArgs e)
         {
-            if(connectionForm.fldConnectionString.Text != "")
+            if(FormContainer.connectionForm.fldConnectionString.Text != "")
             {
-                connectionForm.Visible = false;
+                FormContainer.connectionForm.Visible = false;
                 this.Visible = true;
             }
             Connected?.Invoke(this, EventArgs.Empty);
@@ -578,21 +504,21 @@ namespace SqlManager
         }
         private void AuthenticationChange(object sender, EventArgs e)
         {
-            if (connectionForm.Authentication.Items[connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности Windows")
+            if (FormContainer.connectionForm.Authentication.Items[FormContainer.connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности Windows")
             {
-                connectionForm.LoginLable.Visible = false;
-                connectionForm.PasswordLable.Visible = false;
-                connectionForm.fldLogin.Visible = false;
-                connectionForm.fldPass.Visible = false;
-                connectionForm.Height = 108;
+                FormContainer.connectionForm.LoginLable.Visible = false;
+                FormContainer.connectionForm.PasswordLable.Visible = false;
+                FormContainer.connectionForm.fldLogin.Visible = false;
+                FormContainer.connectionForm.fldPass.Visible = false;
+                FormContainer.connectionForm.Height = 108;
             }
-            if (connectionForm.Authentication.Items[connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности SQL Server")
+            if (FormContainer.connectionForm.Authentication.Items[FormContainer.connectionForm.Authentication.SelectedIndex].ToString() == "Проверка подлинности SQL Server")
             {
-                connectionForm.LoginLable.Visible = true;
-                connectionForm.PasswordLable.Visible = true;
-                connectionForm.fldLogin.Visible = true;
-                connectionForm.fldPass.Visible = true;
-                connectionForm.Height = 164;
+                FormContainer.connectionForm.LoginLable.Visible = true;
+                FormContainer.connectionForm.PasswordLable.Visible = true;
+                FormContainer.connectionForm.fldLogin.Visible = true;
+                FormContainer.connectionForm.fldPass.Visible = true;
+                FormContainer.connectionForm.Height = 164;
             }
         }
 
@@ -604,7 +530,7 @@ namespace SqlManager
                 currentDB = TreeViewExplorer.SelectedNode.FullPath.Split('\\')[0];
                 if(Table.DataSource != null)
                 {
-                    ClearTable();
+                    TableHandler.ClearTable();
                 }
                 TableSelected?.Invoke(this, EventArgs.Empty);
             }
@@ -655,53 +581,19 @@ namespace SqlManager
 
         private void Table_HotKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyValue == (char)Keys.F && Table.DataSource != null)
-            {
-                ShowSearchForm(sender, EventArgs.Empty);
-            }
-            if(e.Control && e.KeyValue == (char)Keys.S)
-            {
-                ShowTableForm(sender, EventArgs.Empty);
-            }
-            if(e.KeyValue == (char)Keys.F5)
-            {
-                if(filterForm != null)
-                {
-                    filterForm.fldFilter.Text = "";
-                }
-            }
+            TableHandler.HotKeyDown(sender, e);
         }
         private void Table_SelectionChanged(object sender, EventArgs e)
         {
-            //Сохраняет измененную строку
-            if (Table.Rows.Count > 1 && dataChanged && ContentMode == Mode.Viewer)
-            {
-                dataChanged = false;
-                RowChanged?.Invoke(this, EventArgs.Empty);
-            }
+            TableHandler.SaveChangedRow(this, e);
         }
         private void Table_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (ContentMode == Mode.Viewer)
-                dataChanged = true;
+            TableHandler.CellChanged(sender, e);
         }
         private void TableScroll(object sender, ScrollEventArgs e)
         {
-            
-            int countRows = Table.Rows.Count;
-            int allCellHeight = Table.Rows.GetRowsHeight(DataGridViewElementStates.None);
-            int oneCellHeight = allCellHeight / countRows;
-            int currentRows = Table.VerticalScrollingOffset / oneCellHeight;
-            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows >= 1000)
-            {
-                if (countRows - currentRows <= 100 && !rowsIsAdd)
-                {
-                    UploadRows?.Invoke(this, EventArgs.Empty);
-                    if (isFull) return;
-                    scrollPointer = currentRows;
-                    rowsIsAdd = true;
-                }
-            }
+            TableHandler.TableScroll(sender, e);
         }
         private void Table_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
@@ -712,82 +604,34 @@ namespace SqlManager
         }
         private void ShowTableContextMenu(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && Table.Name != "Creator" && Table.DataSource != null)
-            {
-                GridRowContext.Show(Table, e.Location);
-            }
+            TableHandler.ShowContextMenu(sender, e);
         }
-        private void ClearTable()
+        private void SaveNewTable(object sender, EventArgs e)
         {
-            Table.DataSource = null;
+            TableHandler.SaveNewTable(sender,e);
         }
         private void CreateNewTable(object sender, EventArgs e)
         {
-            TableCreated?.Invoke(this, EventArgs.Empty);
-            tableForm.btnActionTable.Click -= CreateNewTable;
-            ContentMode = Mode.Viewer;
-            Table.ColumnWidthChanged -= Table_ColumnWidthChanged;
-            Table.CellBeginEdit -= Table_CellBeginEdit;
-            ClearTable();
-        }
-        private void CreateTable(object sender, EventArgs e)
-        {
-            TableCreate?.Invoke(this, EventArgs.Empty);
-            ContentMode = Mode.Creator;
-            Table.CellBeginEdit += Table_CellBeginEdit;
-            Table.ColumnWidthChanged += Table_ColumnWidthChanged;
-            CurrentDB = TreeViewExplorer.SelectedNode.FullPath;
-        }
-        private void Table_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {
-            if(Table.Name == "Creator")
-            {
-                int cellHeigh = Table.RowTemplate.Height;
-                int cellWidth = Table.Columns[0].Width;
-                int WidthLB = Table.Columns[1].Width;
-                editCell = e.RowIndex;
-                CreateTypeBox();
-                if (e.ColumnIndex == Table.Columns["Type"].Index)
-                {
-                    Point p = Table.Location;
-                    p.X += cellWidth + Table.RowHeadersWidth;
-                    p.Y += Table.ColumnHeadersHeight + cellHeigh + (cellHeigh * editCell);
-                    TypeBox.Width = WidthLB;
-                    TypeBox.Location = p;
-                    this.Controls.Add(TypeBox);
-                    TypeBox.BringToFront();
-                }
-                if (e.ColumnIndex == Table.Columns["Name"].Index || e.ColumnIndex == Table.Columns["Nullable"].Index)
-                {
-                    this.Controls.Remove(TypeBox);
-                }
-            }
-        }
-        private void Table_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
-        {
-            if(Table.Name == "Creator")
-            {
-                this.Controls.Remove(TypeBox);
-            }
+            TableHandler.CreateNewTable(sender,e);
         }
         private void DeleteTable(object sender, EventArgs e)
         {
-            TableDeleted?.Invoke(this, EventArgs.Empty);
+            TableHandler.DeleteTable(sender, e);
         }
 
         private void CloseDBForm(object sender, EventArgs e)
         {
-            dbForm.Close();
+            FormContainer.dbForm.Close();
         }
-        private void CreateDB(object sender, KeyEventArgs e)
+        public void CreateDB(object sender, KeyEventArgs e)
         {
             if(e.KeyData == Keys.Enter)
             {
                 DBCreated?.Invoke(this, EventArgs.Empty);
-                dbForm.Close();
+                FormContainer.dbForm.Close();
             }
         }
-        private void CreateDB(object sender, EventArgs e)
+        public void CreateDB(object sender, EventArgs e)
         {
             var s = sender;
             DBCreated?.Invoke(this, EventArgs.Empty);
@@ -846,74 +690,36 @@ namespace SqlManager
             }
         }
 
-        private List<string> GetListTypes()
+        private void CreateEventDictionary()
         {
-            var Types = new List<string>();
-            Types.Add("BIT");
-            Types.Add("TINYINT");
-            Types.Add("SMALLINT");
-            Types.Add("INT");
-            Types.Add("BIGINT");
-            Types.Add("DECIMAL(18, 0)");
-            Types.Add("NUMERIC(18, 0)");
-            Types.Add("SMALLMONEY");
-            Types.Add("MONEY");
-            Types.Add("FLOAT");
-            Types.Add("REAL");
-            Types.Add("DATE");
-            Types.Add("TIME(7)");
-            Types.Add("DATETIME");
-            Types.Add("DATETIME2(7)");
-            Types.Add("SMALLDATETIME(7)");
-            Types.Add("DATETIMEOFFSET");
-            Types.Add("CHAR(10)");
-            Types.Add("VARCHAR");
-            Types.Add("NVARCHAR(24)");
-            Types.Add("BINARY(50)");
-            Types.Add("VARBINARY");
-            Types.Add("UNIQUEIDENTIFIER");
-            Types.Add("TIMESTAMP");
-            Types.Add("CURSOR");
-            Types.Add("HIERARCHYID");
-            Types.Add("SQL_VARIANT");
-            Types.Add("XML");
-            Types.Add("TABLE");
-            Types.Add("GEOGRAPHY");
-            Types.Add("GEOMETRY");
-            return Types;
-        } 
-        private void CreateTypeBox()
-        {
-            if(TypeBox == null)
-            {
-                TypeBox = new ListBox();
-                TypeBox.MouseClick += TypeBox_MouseClick;
-                TypeBox.Name = "TypeBox";
-                TypeBox.BackColor = Color.FromArgb(63, 64, 74);
-                TypeBox.ForeColor = Color.White;
-                TypeBox.BorderStyle = BorderStyle.None;
-                foreach (var type in GetListTypes())
-                {
-                    TypeBox.Items.Add(type);
-                }
-            }
-        }
-        private void TypeBox_MouseClick(object sender, MouseEventArgs e)
-        {
-            Table.CurrentCell = Table.Rows[editCell].Cells[1];
-            Table.BeginEdit(true);
-            Table.Rows[editCell].Cells[1].Value = TypeBox.SelectedItem;
-            this.Controls.Remove(TypeBox);
-            Table.EndEdit();
+            EventContainer.Add("Connected", Connected);
+            EventContainer.Add("RowDeleted", RowDeleted);
+            EventContainer.Add("RowChanged", RowChanged);
+            EventContainer.Add("TableSelected", TableSelected);
+            EventContainer.Add("DBCreated", DBCreated);
+            EventContainer.Add("Refreshed", Refreshed);
+            EventContainer.Add("Disconnected", Disconnected);
+            EventContainer.Add("ApplicationClose", ApplicationClose);
+            EventContainer.Add("TableCreated", TableCreated);
+            EventContainer.Add("TableCreate", TableCreate);
+            EventContainer.Add("DBDeleted", DBDeleted);
+            EventContainer.Add("TableDeleted", TableDeleted);
+            EventContainer.Add("DBRenamed", DBRenamed);
+            EventContainer.Add("TableRenamed", TableRenamed);
+            EventContainer.Add("RowSearched", RowSearched);
+            EventContainer.Add("DataFiltered", DataFiltered);
+            EventContainer.Add("UploadRows", UploadRows);
+            EventContainer.Add("QueryExecute", QueryExecute);
+
         }
 
         private void Disconnection(object sender, EventArgs e)
         {
             this.Visible = false;
-            ClearTable();
+            TableHandler.ClearTable();
             TreeViewExplorer.Nodes.Clear();
             Disconnected?.Invoke(this, EventArgs.Empty);
-            connectionForm.ShowDialog(this);
+            FormContainer.connectionForm.ShowDialog(this);
         }
 
     }
