@@ -92,7 +92,7 @@
             this.Table.DefaultCellStyle = dataGridViewCellStyle2;
             this.Table.EnableHeadersVisualStyles = false;
             this.Table.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(37)))), ((int)(((byte)(51)))));
-            this.Table.Location = new System.Drawing.Point(181, 36);
+            this.Table.Location = new System.Drawing.Point(191, 36);
             this.Table.MultiSelect = false;
             this.Table.Name = "Table";
             this.Table.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
@@ -115,7 +115,7 @@
             this.Table.RowTemplate.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
             this.Table.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Table.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.Table.Size = new System.Drawing.Size(712, 553);
+            this.Table.Size = new System.Drawing.Size(702, 553);
             this.Table.TabIndex = 1;
             // 
             // TreeViewExplorer
@@ -125,7 +125,7 @@
             this.TreeViewExplorer.Location = new System.Drawing.Point(12, 36);
             this.TreeViewExplorer.Name = "TreeViewExplorer";
             this.TreeViewExplorer.ShowPlusMinus = false;
-            this.TreeViewExplorer.Size = new System.Drawing.Size(151, 553);
+            this.TreeViewExplorer.Size = new System.Drawing.Size(173, 553);
             this.TreeViewExplorer.TabIndex = 5;
             // 
             // ExplorerDBContext
@@ -280,7 +280,7 @@
             this.panel1.Controls.Add(this.btnAddDB);
             this.panel1.Location = new System.Drawing.Point(12, 595);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(151, 30);
+            this.panel1.Size = new System.Drawing.Size(173, 30);
             this.panel1.TabIndex = 9;
             // 
             // btnDisconnect
@@ -389,29 +389,29 @@
         }
 
         #endregion
-        private System.Windows.Forms.ContextMenuStrip ExplorerDBContext;
-        private System.Windows.Forms.ToolStripMenuItem CreateTableTSMItem;
-        private System.Windows.Forms.ToolStripMenuItem DeleteDBTSMItem;
-        private System.Windows.Forms.ContextMenuStrip ExplorerTableContext;
-        private System.Windows.Forms.ToolStripMenuItem DeleteTableTSMItem;
-        private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.Button btnMinimize;
-        private System.Windows.Forms.Button btnAddDB;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnDeleteDB;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ToolStripMenuItem DeleteRowTSMItem;
-        private System.Windows.Forms.ToolStripMenuItem RenameDBTSMItem;
-        private System.Windows.Forms.ToolStripMenuItem RenameTableTSMItem;
-        private System.Windows.Forms.ToolStripMenuItem FindValueTSMItem;
-        private System.Windows.Forms.ToolStripMenuItem FilterTSMItem;
-        private System.Windows.Forms.Button btnDisconnect;
         protected internal System.Windows.Forms.DataGridView Table;
         protected internal System.Windows.Forms.ContextMenuStrip GridRowContext;
         protected internal System.Windows.Forms.TreeView TreeViewExplorer;
         protected internal System.Windows.Forms.Panel MenuPanel;
+        protected internal System.Windows.Forms.Button btnClose;
+        protected internal System.Windows.Forms.Button btnMinimize;
+        protected internal System.Windows.Forms.Button btnAddDB;
+        protected internal System.Windows.Forms.Button btnRefresh;
+        protected internal System.Windows.Forms.Button btnDeleteDB;
+        protected internal System.Windows.Forms.Button btnDisconnect;
+        protected internal System.Windows.Forms.ContextMenuStrip ExplorerDBContext;
+        protected internal System.Windows.Forms.ToolStripMenuItem CreateTableTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem DeleteDBTSMItem;
+        protected internal System.Windows.Forms.ContextMenuStrip ExplorerTableContext;
+        protected internal System.Windows.Forms.ToolStripMenuItem DeleteTableTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem DeleteRowTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem RenameDBTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem RenameTableTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem FindValueTSMItem;
+        protected internal System.Windows.Forms.ToolStripMenuItem FilterTSMItem;
     }
 }
 

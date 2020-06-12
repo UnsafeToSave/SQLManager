@@ -9,7 +9,7 @@ namespace SqlManager.InterfaceHandler
 {
     public static class Menu
     {
-        public static Message MoveForm(object sender, MouseEventArgs e)
+        public static void MoveForm(object sender, MouseEventArgs e)
         {
             Message m = default;
             switch ((sender as Panel).Parent.Name)
@@ -43,7 +43,7 @@ namespace SqlManager.InterfaceHandler
                     m = Message.Create(FormContainer.queryForm.Handle, 161, new IntPtr(2), IntPtr.Zero);
                     break;
             }
-            return m;
+            FormContainer.mainForm.m = m;
         }
         public static void CloseForm(object sender, EventArgs e)
         {

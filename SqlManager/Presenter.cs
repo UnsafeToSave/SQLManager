@@ -245,7 +245,7 @@ namespace SqlManager
         {
             if (_view.ServerName == "")
             {
-                _message.ShowErrorMessage("Ошибка имени сeрвера");
+                _message.ShowErrorMessage("Не задано имя сервера");
                 return;
             }
             _tools.Connection(_view.ServerName, _view.Authentication, _view.Login, _view.Password);
