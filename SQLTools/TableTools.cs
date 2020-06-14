@@ -14,6 +14,7 @@ namespace SQLTools
         static SqlConnectionStringBuilder _connectionStr = ConfigConnection.GetConnectionBuilder();
         static SqlDataAdapter _adapter = null;
         static DataTable currentTable;
+        internal static int startRows;
         private static int fillingStep = 20000;
 
         internal static int CurrentRowsCount {
@@ -23,12 +24,11 @@ namespace SQLTools
             }
         }
 
-        internal static DataTable GetNewTable(string InitialCatalog, string tableName, int startRows, int maxRows)
+        internal static DataTable GetNewTable(string InitialCatalog, string tableName, int start, int maxRows)
         {
             currentTable = new DataTable(tableName);
-
             string query = $"Select * from {tableName}";
-
+            startRows = start;
             _adapter = DataAdapter.GetAdapter(InitialCatalog, query);
 
             try
@@ -56,7 +56,7 @@ namespace SQLTools
             _adapter = DataAdapter.GetAdapter(InitialCatalog, query);
             try
             {
-                _adapter.Fill(0, (rowsCount + fillingStep), newTable);
+                _adapter.Fill(startRows, (rowsCount + fillingStep), newTable);
             }
             catch (SqlException e)
             {

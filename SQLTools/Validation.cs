@@ -95,6 +95,10 @@ namespace SQLTools
             {
                 return true;
             }
+            if (TableTools.CurrentRowsCount + TableTools.startRows >= _maxRows)
+            {
+                return true;
+            }
             return false;
         }
 

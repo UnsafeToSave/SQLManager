@@ -1,11 +1,6 @@
-﻿using SqlManager.Forms;
-using SqlManager.InterfaceHandler;
+﻿using SqlManager.InterfaceHandler;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SqlManager
@@ -14,7 +9,7 @@ namespace SqlManager
     {
 
         public static int editCell;
-        public static bool rowsIsAdd = false;
+        public static bool scrollOnOff = true;
         public static bool dataChanged = false;
         public static Mode ContentMode;
 
@@ -40,18 +35,21 @@ namespace SqlManager
         }
         public static void TableScroll(object sender, ScrollEventArgs e)
         {
-            int countRows = FormContainer.mainForm.Table.Rows.Count;
-            int allCellHeight = FormContainer.mainForm.Table.Rows.GetRowsHeight(DataGridViewElementStates.None);
-            int oneCellHeight = allCellHeight / countRows;
-            int currentRows = FormContainer.mainForm.Table.VerticalScrollingOffset / oneCellHeight;
-            if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows >= 1000)
+            if (scrollOnOff)
             {
-                if (countRows - currentRows <= 100 && !rowsIsAdd)
+                int countRows = FormContainer.mainForm.Table.Rows.Count;
+                int allCellHeight = FormContainer.mainForm.Table.Rows.GetRowsHeight(DataGridViewElementStates.None);
+                int oneCellHeight = allCellHeight / countRows;
+                int currentRows = FormContainer.mainForm.Table.VerticalScrollingOffset / oneCellHeight;
+                if (e.ScrollOrientation == ScrollOrientation.VerticalScroll && countRows >= 1000)
                 {
-                    EventContainer.Invoke(sender, "UploadRows");
-                    if (FormContainer.mainForm.IsFull) return;
-                    FormContainer.mainForm.ScrollPointer = currentRows;
-                    rowsIsAdd = true;
+                    if (countRows - currentRows <= 100)
+                    {
+                        EventContainer.Invoke(sender, "UploadRows");
+                        if (FormContainer.mainForm.IsFull) return;
+                        FormContainer.mainForm.ScrollPointer = currentRows;
+                        scrollOnOff = false;
+                    }
                 }
             }
         }
@@ -65,7 +63,7 @@ namespace SqlManager
         }
         public static void ShowContextMenu(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && FormContainer.mainForm.Table.Name != "Creator" && FormContainer.mainForm.Table.DataSource != null)
+            if (e.Button == MouseButtons.Right && ContentMode != Mode.Creator && FormContainer.mainForm.Table.DataSource != null)
             {
                 FormContainer.mainForm.GridRowContext.Show(FormContainer.mainForm.Table, e.Location);
             }

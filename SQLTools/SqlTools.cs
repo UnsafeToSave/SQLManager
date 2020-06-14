@@ -185,7 +185,7 @@ namespace SQLTools
 
         public async Task<int> GetRowsCount (string InitialCatalog, string tableName)
         {
-            return TableTools.GetRowsCount(InitialCatalog, tableName);
+            return await Task.Run(() => TableTools.GetRowsCount(InitialCatalog, tableName));
         }
     }
 }

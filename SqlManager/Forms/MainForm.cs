@@ -236,6 +236,11 @@ namespace SqlManager
             }
             set
             {
+                if (!value)
+                {
+                    TableHandler.scrollOnOff = true;
+                }
+
                 isSearch = value;
             }
         }
@@ -263,11 +268,12 @@ namespace SqlManager
                 {
                     Table.DataSource = value;
                     Table.Update();
-                    if (Table.Name == value.TableName)
+                    if (Table.Name == value.TableName && !IsSearch)
                     {
                         Table.FirstDisplayedScrollingRowIndex = ScrollPointer;
-                        TableHandler.rowsIsAdd = false;
+                        TableHandler.scrollOnOff = true;
                     }
+                    
                     Table.Name = value.TableName;
                 }
                 
@@ -331,22 +337,6 @@ namespace SqlManager
         public event EventHandler UploadRows;
         public event EventHandler QueryExecute;
         #endregion
-
-        #region Меню
-        public void CloseForm(object sender, EventArgs e)
-        {
-            menu.CloseForm(sender, e);
-        }
-        public void MinimizeWindow(object sender, EventArgs e)
-        {
-            menu.MinimizeWindow(sender, e);
-        }
-        public void MaximizeWindow(object sender, EventArgs e)
-        {
-            menu.MaximizeWindow(sender, e);
-        }
-        #endregion
-
         public MainForm()
         {
             FormContainer.mainForm = this;
@@ -458,6 +448,7 @@ namespace SqlManager
             }
             else
                 currentDB = TreeViewExplorer.SelectedNode.Text;
+            TableHandler.ContentMode = Mode.Viewer;
         }
         public void TreeViewExplorer_MouseClick(object sender, MouseEventArgs e)
         {
@@ -597,6 +588,7 @@ namespace SqlManager
         }
         public void SearchRow(object sender, EventArgs e)
         {
+            TableHandler.scrollOnOff = false;
             RowSearched?.Invoke(this, EventArgs.Empty);
         }
         public void DataFilter(object sender, EventArgs e)
@@ -640,6 +632,7 @@ namespace SqlManager
         {
             this.Visible = false;
             TableHandler.ClearTable();
+            Table.Name = "";
             TreeViewExplorer.Nodes.Clear();
             Disconnected?.Invoke(this, EventArgs.Empty);
             FormContainer.connectionForm.ShowDialog(this);

@@ -19,9 +19,9 @@ namespace SqlManager.InterfaceHandler
             main.TreeViewExplorer.ImageList = main.Images;
 
             main.MenuPanel.MouseDown += Menu.MoveForm;
-            main.MenuPanel.DoubleClick += main.MaximizeWindow;
-            main.btnClose.Click += main.CloseForm;
-            main.btnMinimize.Click += main.MinimizeWindow;
+            main.MenuPanel.DoubleClick += Menu.MaximizeWindow;
+            main.btnClose.Click += Menu.CloseForm;
+            main.btnMinimize.Click += Menu.MinimizeWindow;
 
 
             main.TreeViewExplorer.AfterSelect += main.TreeViewExplorer_AfterSelect;

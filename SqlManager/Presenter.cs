@@ -78,9 +78,9 @@ namespace SqlManager
                     }
                     else if((index + 500) >= maxRows)
                     {
-                        int rowIndex = 500 + maxRows - index;
-                        _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable, (index - rowIndex), 1000);
-                        _view.SelectedRowIndex = rowIndex;
+                        
+                        _view.Content = await _tools.GetNewTable(_view.CurrentDB, _view.CurrentTable,  maxRows - 1000, 1000);
+                        _view.SelectedRowIndex = index - (maxRows - 1000);
                     }
                     else
                     {
