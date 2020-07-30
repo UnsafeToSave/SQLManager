@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.IO;
 
 namespace SqlManager
 {
@@ -343,7 +343,6 @@ namespace SqlManager
             InitializeComponent();
             ShowConnectionForm();
 
-            
 
             this.Shown += MainForm_Shown;
             this.FormClosing += MainForm_FormClosing;
@@ -353,11 +352,11 @@ namespace SqlManager
         public static ImageList LoadResources()
         {
             var interfaceImages = new ImageList();
-            interfaceImages.Images.Add(Image.FromFile("Assets\\Images\\DBIcon.png"));
-            interfaceImages.Images.Add(Image.FromFile("Assets\\Images\\SelectDBIcon.png"));
-            interfaceImages.Images.Add(Image.FromFile("Assets\\Images\\TableIcon.png"));
-            interfaceImages.Images.Add(Image.FromFile("Assets\\Images\\SelectTableIcon.png"));
-            interfaceImages.Images.Add(Image.FromFile("Assets\\Images\\EmptyDBIcon.png"));
+            interfaceImages.Images.Add((Image)Properties.Resources.ResourceManager.GetObject("DBIcon"));
+            interfaceImages.Images.Add((Image)Properties.Resources.ResourceManager.GetObject("SelectDBIcon"));
+            interfaceImages.Images.Add((Image)Properties.Resources.ResourceManager.GetObject("TableIcon"));
+            interfaceImages.Images.Add((Image)Properties.Resources.ResourceManager.GetObject("SelectTableIcon"));
+            interfaceImages.Images.Add((Image)Properties.Resources.ResourceManager.GetObject("EmptyDBIcon"));
             return interfaceImages;
         }
 

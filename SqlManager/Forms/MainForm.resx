@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="ExplorerDBContext.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>21, 31</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="ExplorerDBContext.TrayLocation" type="System.Drawing.Point, System.Drawing">
+    <value>21, 31</value>
+  </data>
   <data name="CreateTableTSMItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -164,9 +164,9 @@
         qNVR8FdqicfjbaZpnlDK4CU7KJzH9BvhElEa3U+n0xgZxi9HvW3pd/1InQAAAABJRU5ErkJggg==
 </value>
   </data>
-  <metadata name="ExplorerTableContext.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <data name="ExplorerTableContext.TrayLocation" type="System.Drawing.Point, System.Drawing">
     <value>181, 30</value>
-  </metadata>
+  </data>
   <data name="RenameTableTSMItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -273,9 +273,9 @@
         gg==
 </value>
   </data>
-  <metadata name="GridRowContext.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <data name="GridRowContext.TrayLocation" type="System.Drawing.Point, System.Drawing">
     <value>336, 30</value>
-  </metadata>
+  </data>
   <data name="DeleteRowTSMItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -292,6 +292,10 @@
         kNNa/6q5Gc3jgyJO9a1UrsIT4i5yG1Gu1vpXjCM3fnN1KOin1N98sPrOjXdaR0HhWaRRP1Y14mo+jHtj
         th2xIHq933SR7zjRr/inAAAAAElFTkSuQmCC
 </value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="$this.TrayHeight" type="System.Int32, mscorlib">
+    <value>28</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

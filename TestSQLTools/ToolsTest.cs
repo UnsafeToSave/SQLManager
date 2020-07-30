@@ -15,7 +15,7 @@ namespace TestSQLTools
     public class ToolsTest
     {
 
-        SQLTools.SQLTools dataComposer = new SQLTools.SQLTools();
+        SqlTools dataComposer = new SqlTools();
 
 
 
@@ -26,12 +26,12 @@ namespace TestSQLTools
         }
 
         [Test]
-        public void Test_GetDBNames()
+        public async void Test_GetDBNames()
         {
             TreeNode[] nodes;
             List<string> dbNames = new List<string>();
 
-            nodes = dataComposer.GetDBNames();
+            nodes = await dataComposer.GetDBNames();
             foreach (var db in nodes)
             {
                 dbNames.Add(db.Text);
@@ -71,13 +71,13 @@ namespace TestSQLTools
         }
 
         [Test]
-        public void Test_GetTable()
+        public async void Test_GetTable()
         {
             DataTable tableTest;
             DataRow newRow1;
             DataRow newRow5;
 
-            tableTest = dataComposer.GetTable("aero", "AeroTest");
+            tableTest = await dataComposer.GetNewTable("aero", "AeroTest");
             newRow1 = tableTest.NewRow();
             newRow1["Id"] = 1;
             newRow1["Name"] = "Name1";
@@ -93,32 +93,32 @@ namespace TestSQLTools
         }
 
         [Test]
-        public void Test_ChangeRow()
+        public async void Test_ChangeRow()
         {
             DataTable tableTest;
             DataTable newTable;
             DataRow newRow;
 
-            tableTest = dataComposer.GetTable("aero", "AeroTest");
+            tableTest = await dataComposer.GetNewTable("aero", "AeroTest");
             newRow = tableTest.NewRow();
             newRow["Id"] = 11;
             newRow["Name"] = "Name11";
             tableTest.Rows.Add(newRow);
             dataComposer.ChangeRow();
-            newTable = dataComposer.GetTable("aero", "AeroTest");
+            newTable = await dataComposer.GetNewTable("aero", "AeroTest");
 
             Assert.AreEqual(11, newTable.Rows.Count);
         }
 
         [Test]
-        public void Test_DeleteRow()
+        public async void Test_DeleteRow()
         {
             DataTable tableTest;
 
-            tableTest = dataComposer.GetTable("aero", "AeroTest");
+            tableTest = await dataComposer.GetNewTable("aero", "AeroTest");
             dataComposer.DeleteRow(10);
 
-            Assert.AreNotEqual(tableTest, dataComposer.GetTable("aero", "AeroTest"));
+            Assert.AreNotEqual(tableTest, await dataComposer.GetNewTable("aero", "AeroTest"));
         }
     }
 }

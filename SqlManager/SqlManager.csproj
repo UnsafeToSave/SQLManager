@@ -143,6 +143,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -174,6 +175,21 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DBIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EmptyDBIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SelectDBIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SelectTableIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TableIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

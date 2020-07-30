@@ -14,7 +14,6 @@ namespace SqlManager.InterfaceHandler
         {
             var main = FormContainer.mainForm;
 
-            main.Visible = false;
             TableHandler.ContentMode = Mode.Viewer;
             main.TreeViewExplorer.ImageList = main.Images;
 
